@@ -87,6 +87,16 @@ def run(*args, **kw):
     return ret, out
 
 
+def to_clipboard(s):
+    ''' send string to clipboard '''
+    try:
+        from gitlink.pyperclip import copy
+    except:
+        raise Exception('warning: xclip must be installed for clipboard to work')
+
+    copy(s)
+
+
 def get_config(section, strip_section=True):
     ''' Get a git config section as a dictionary
 
@@ -203,7 +213,10 @@ def main():
         exit(1)
 
     if link and clipboard:
-        pass
+        try:
+            to_clipboard(link)
+        except Exception as e:
+            stderr.write(str(e)+'\n')
 
     if link:
         stdout.write(link+'\n')
