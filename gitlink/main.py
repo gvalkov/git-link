@@ -11,7 +11,7 @@ import subprocess as sub
 
 from sys import argv, exit, stderr, stdout
 
-from gitlink.repobrowsers import names
+from gitlink.repobrowsers import names, LinkType as LT
 from gitlink.version import version_verbose
 
 
@@ -69,6 +69,75 @@ def parseopt(args=None):
     else:        o, a = p.parse_args(args)
 
     return p, o, a
+
+
+def run(*args, **kw):
+    p = sub.Popen(stdout=sub.PIPE, stderr=sub.PIPE, shell=True, *args, **kw)
+    out, err = p.communicate()
+    ret = p.poll()
+
+    if ret:
+        cmd = kw.get('args')
+        if cmd is None: cmd = args[0]
+        #raise sub.CalledProcessError(ret, cmd, output=err)
+
+    if out:
+        out = out.rstrip('\n')
+
+    return ret, out
+
+
+def get_config(section, strip_section=True):
+    ''' Get a git config section as a dictionary
+
+        [link]
+            clipboard = true
+            browser = cgit
+            url = false
+
+        => {'clipboard' : True, 'browser' : 'cgit', 'url' : False}
+        => {'link.clipboard': True ...} if not strip_section
+    '''
+
+    cmd = 'git config --get-regexp "%s\\..*"' % section
+
+    p = sub.Popen(cmd, shell=True, stdout=sub.PIPE, stderr=sub.PIPE)
+    out, err = p.communicate()
+
+    if p.poll():
+        return {}
+
+    def parse_helper(item):
+        key, value = item
+
+        if strip_section:
+            key = key.replace(section+'.', '', 1)
+
+        if value == 'true': value = True
+        elif value == 'false': value = False
+
+        return key, value
+
+    out = out.splitlines()
+    out = (i.split(' ', 1) for i in out)
+    out = map(parse_helper, out)
+
+    return dict(out)
+
+
+def git_cat_commit(sha):
+    ''' sha => {
+          'tree'     : '',
+          'parent'   : '',
+          'author'   : '',
+          'comitter' : '', }
+    '''
+
+    r, out = run('git cat-file commit %s' % sha)
+    out = out.splitlines()[:4]
+
+    res = dict([i.split(' ', 1) for i in out])
+    return res
 
 
 def readopts():
