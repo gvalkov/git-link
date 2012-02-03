@@ -10,6 +10,7 @@ import textwrap
 import subprocess as sub
 
 from sys import argv, exit, stderr, stdout
+from os.path import relpath
 
 from gitlink.repobrowsers import names, LinkType as LT
 from gitlink.version import version_verbose
@@ -183,6 +184,106 @@ def readopts():
     return url, browser, clipboard, args, opts.raw
 
 
+def commit(arg):
+    ''' HEAD~10 -> actual commit sha '''
+
+    r, sha = run('git show -s --format=%%H "%s"' % arg)
+    return { 'type' : LT.commit, 'sha' : sha }
+
+
+def tree(arg):
+    ''' HEAD~~^{tree} -> actual tree sha '''
+
+    if '^{tree}' in arg:
+        sha = arg.replace('^{tree}', '')
+        sha = git_cat_commit(sha)['tree']
+    else:
+        sha = arg
+
+    return { 'type' : LT.tree, 'sha' : sha }
+
+
+def blob(arg):
+    ''' HEAD~2:main.py -> tree hash + path relative to git topdir '''
+
+    if ':' in arg:
+        sym, path = arg.split(':', 1)
+        r, sha = run('git log --all -n1 --format=%%T -- "%s" -- "%s"' % (sym, path))
+        r, topdir = run('git rev-parse --show-toplevel')
+
+        res = { 'type' : LT.blob,
+                'sha'  : sha,
+                'path' : relpath(path, topdir) }
+
+        return res
+
+
+def path(arg):
+    ''' main.py -> path relative to git topdir if path exists'''
+
+    r, sha = run('git log --all -n1 --format=%%T -- "%s"' % arg)
+
+    if sha:
+        r, topdir = run('git rev-parse --show-toplevel')
+
+        res = { 'type' : LT.path,
+                'sha'  : None,
+                'path' : relpath(arg, topdir) }
+
+        return res
+
+
+def branch(arg):
+    ''' check if arg is a branch pointer '''
+
+    r, sha = run('git show-ref --heads "%s"' % arg)
+    sha, ref = sha.split(' ')
+
+    res = { 'type' : LT.branch,
+            'sha' : sha,
+            'ref' : ref,
+            'shortref' : ref.split('/')[-1] }
+
+    return res
+
+
+def diff(arg):
+    pass
+
+
+def expand_arg(arg):
+    r, t = run('git cat-file -t %s' % arg)
+
+    res = {}
+
+    if t == 'commit' and arg != 'HEAD':
+        try:
+            res = branch(arg)
+        except:
+            res = commit(arg)
+
+    elif t == 'commit':
+        res = commit(arg)
+
+    elif t == 'tree':
+        res = tree(arg)
+
+    elif t == 'blob':
+        res = blob(arg)
+
+    elif t == 'tag':
+        res = { 'type' : LT.tag, 'sha' : None }
+
+    # determine if arg is a path
+    else:
+        res = path(arg)
+
+    if not res:
+        res = {'type' : LT.unknown}
+
+    return res
+
+
 def main():
     url, browser, clipboard, args, raw = readopts()
 
@@ -195,19 +296,19 @@ def main():
     rb = names[browser](url)
 
     if t == LT.commit:
-        pass
+        link = rb.commit(res['sha'])
 
     elif t == LT.tree:
-        pass
+        link = rb.tree(res['sha'])
 
     elif t == LT.tag:
-        pass
+        link = rb.tag(arg)
 
     elif t == LT.branch:
-        pass
+        link = rb.branch(res['shortref'])
 
     elif t in (LT.path, LT.blob):
-        pass
+        link = rb.path(res['path'], res['sha'], raw=raw)
 
     elif t == LT.unknown:
         exit(1)
