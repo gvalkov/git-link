@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from os.path import join as pjoin
+
 
 class RepoBrowser(object):
     ''' I represent a repository browser and my methods return links to the
@@ -25,6 +27,10 @@ class RepoBrowser(object):
     def tree(self, sha):
         ''' Get url for tree object '''
         raise NotImplementedError
+
+    def join(self, *args):
+        l = [self.url] ; l.extend(args)
+        return pjoin(*l)
 
 
 class LinkType(object):
@@ -57,6 +63,35 @@ class GithubPrivateBrowser(RepoBrowser):
 class CgitBrowser(RepoBrowser):
     ''' cgit - web interface for git repositories, written in c '''
 
+    def __init__(self, url):
+        self.url = url
+
+    def commit(self, sha):
+        return self.join('commit', '?id=%s' % sha)
+
+    def tree(self, sha):
+        return self.join('tree', '?tree=%s' % sha)
+
+    def branch(self, ref):
+        shortref = ref.split('/')[-1]
+        return self.join('log', '?h=%s' % shortref)
+
+    def tag(self, name):
+        return self.join('tag', '?id=%s' % name)
+
+    def path(self, path, tree=None, commit=None, raw=False):
+        if tree:
+            url = self.join('tree', path, '?tree=%s' % tree)
+        elif commit:
+            url = self.join('tree', path, '?id=%s' % tree)
+        else:
+            url = self.join('tree', path)
+
+        if raw:
+            url = url.replace('tree', 'plain', 1)
+
+        return url
+
 
 names = {
     'cgit'           : CgitBrowser,
@@ -65,5 +100,3 @@ names = {
     'github'         : GithubBrowser,
     'github-private' : GithubPrivateBrowser,
 }
-
-
