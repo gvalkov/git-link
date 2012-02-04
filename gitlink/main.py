@@ -10,7 +10,7 @@ import textwrap
 import subprocess as sub
 
 from sys import argv, exit, stderr, stdout
-from os.path import relpath
+from os.path import relpath, exists
 
 from gitlink.repobrowsers import names, LinkType as LT
 from gitlink.version import version_verbose
@@ -136,18 +136,21 @@ def get_config(section, strip_section=True):
     return dict(out)
 
 
-def git_cat_commit(sha):
-    ''' sha => {
+def git_cat_commit(treeish):
+    ''' treeish => {
+          'commit'   : sha of commit pointed by treeish,
           'tree'     : '',
           'parent'   : '',
           'author'   : '',
           'comitter' : '', }
     '''
 
-    r, out = run('git cat-file commit %s' % sha)
+    r, out = run('git cat-file commit %s' % treeish)
     out = out.splitlines()[:4]
 
     res = dict([i.split(' ', 1) for i in out])
+    r, res['sha'] = run('git show -s --format="%%H" "%s"' % treeish)
+
     return res
 
 
@@ -185,10 +188,12 @@ def readopts():
 
 
 def commit(arg):
-    ''' HEAD~10 -> actual commit sha '''
+    ''' HEAD~10 -> actual commit sha and tree sha'''
+    res = git_cat_commit(arg)
 
-    r, sha = run('git show -s --format=%%H "%s"' % arg)
-    return { 'type' : LT.commit, 'sha' : sha }
+    return { 'type' : LT.commit,
+             'sha'  : res['sha'],
+             'tree_sha' : res['tree'] }
 
 
 def tree(arg):
@@ -204,39 +209,80 @@ def tree(arg):
 
 
 def blob(arg):
-    ''' HEAD~2:main.py -> tree hash + path relative to git topdir '''
+    ''' HEAD~2:main.py -> tree + blob + path relative to git topdir '''
+
+    res = {
+        'type'       : LT.blob,
+        'tree_sha'   : None,
+        'commit_sha' : None,
+        'path'       : None, }
 
     if ':' in arg:
-        sym, path = arg.split(':', 1)
+        treeish, path = arg.split(':', 1)
+        commitd = git_cat_commit(treeish)
 
-        r, sha = run('git log --all -n1 --format="%%T %%H" -- "%s" -- "%s"' % (sym, path))
-        tree_sha, commit_sha = sha.split()
+        sha, t, tree_sha = git_path(path.split('/'), commitd['tree'])
 
         r, topdir = run('git rev-parse --show-toplevel')
 
-        res = { 'type' : LT.blob,
-                'path' : relpath(path, topdir),
-                'tree_sha'   : tree_sha,
-                'commit_sha' : commit_sha, }
+        res['path']       = relpath(path, topdir)
+        res['commit_sha'] = commitd['sha']
+        res['tree_sha']   = tree_sha
+        res['sha']        = sha
+    else:
+        res['sha'] = arg
 
-        return res
+    return res
+
+
+def lstree(sha):
+    r, out = run('git ls-tree %s' % sha)
+
+    for line in out.splitlines():
+        mode, type, sha = line.split(' ', 3)
+        sha, path = sha.split('\t', 1)
+
+        yield mode, type, sha, path
+
+
+def git_path(arg, tree_sha='HEAD^{tree}'):
+    ''' :param arg: a path.split('/') relative to root of the wc
+        :param tree_sha: treeish to search
+
+        if path leads to a  blob object return:
+            blob sha, 'blob', tree sha
+        if path leads to a tree object return:
+            tree sha, 'tree', None
+    '''
+
+    if not arg:
+        return tree_sha, 'tree', None
+
+    for m, t, sha, p in lstree(tree_sha):
+        if p == arg[0] and t == 'tree':
+            return git_path(arg[1:], sha)
+
+        if p == arg[0] and t == 'blob':
+            return sha, 'blob', tree_sha
 
 
 def path(arg):
-    ''' main.py -> path relative to git topdir if path exists'''
+    res = {}
 
-    r, sha = run('git log --all -n1 --format="%%T %%H" -- "%s"' % arg)
-    tree_sha, commit_sha = sha.split()
-
-    if sha:
+    if exists(arg):
         r, topdir = run('git rev-parse --show-toplevel')
+        path = relpath(arg, topdir)
 
-        res = { 'type' : LT.path,
-                'path' : relpath(arg, topdir),
-                'tree_sha'   : tree_sha,
-                'commit_sha' : commit_sha, }
+        sha, type, tree_sha = git_path(path.split('/'))
 
-        return res
+        if type == 'blob'   : res['type'] = LT.blob
+        elif type == 'tree' : res['type'] = LT.path
+
+        res['path'] = path
+        res['sha']  = sha # tree or blob sha
+        res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
+
+    return res
 
 
 def branch(arg):
@@ -293,8 +339,8 @@ def expand_arg(arg):
 def main():
     url, browser, clipboard, args, raw = readopts()
 
-    arg = args[0]
-    res = expand_arg(arg)
+    arg = args[0].rstrip('/')
+    res = r = expand_arg(arg)
 
     t = res['type']
 
@@ -302,19 +348,22 @@ def main():
     rb = names[browser](url)
 
     if t == LT.commit:
-        link = rb.commit(res['sha'])
+        link = rb.commit(r['sha'])
 
     elif t == LT.tree:
-        link = rb.tree(res['sha'])
+        link = rb.tree(r['sha'])
 
     elif t == LT.tag:
         link = rb.tag(arg)
 
     elif t == LT.branch:
-        link = rb.branch(res['ref'])
+        link = rb.branch(r['ref'])
 
-    elif t in (LT.path, LT.blob):
-        link = rb.path(res['path'], res['tree_sha'], res['commit_sha'], raw=raw)
+    elif t == LT.blob:
+        link = rb.blob(r['sha'], r['path'], r['tree_sha'], raw=raw)
+
+    elif t == LT.path:
+        link = rb.path(r['path'], r['sha'])
 
     elif t == LT.unknown:
         exit(1)

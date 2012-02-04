@@ -79,17 +79,23 @@ class CgitBrowser(RepoBrowser):
     def tag(self, name):
         return self.join('tag', '?id=%s' % name)
 
-    def path(self, path, tree=None, commit=None, raw=False):
-        url = [self.url, 'tree', path]
-        if tree:
-            url.append('?tree=%s' % tree)
+    def blob(self, sha, path, tree=None, raw=False):
+        if tree and tree == 'HEAD^{tree}':
+            tree = None
 
-        url = pjoin(*url)
+        url = self.path(path, tree)
 
         if raw:
             url = url.replace('tree', 'plain', 1)
 
         return url
+
+    def path(self, path, tree=None):
+        url = [self.url, 'tree', path]
+        if tree:
+            url.append('?tree=%s' % tree)
+
+        return pjoin(*url)
 
 
 names = {
@@ -99,3 +105,4 @@ names = {
     'github'         : GithubBrowser,
     'github-private' : GithubPrivateBrowser,
 }
+
