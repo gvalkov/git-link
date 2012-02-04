@@ -208,12 +208,16 @@ def blob(arg):
 
     if ':' in arg:
         sym, path = arg.split(':', 1)
-        r, sha = run('git log --all -n1 --format=%%T -- "%s" -- "%s"' % (sym, path))
+
+        r, sha = run('git log --all -n1 --format="%%T %%H" -- "%s" -- "%s"' % (sym, path))
+        tree_sha, commit_sha = sha.split()
+
         r, topdir = run('git rev-parse --show-toplevel')
 
         res = { 'type' : LT.blob,
-                'sha'  : sha,
-                'path' : relpath(path, topdir) }
+                'path' : relpath(path, topdir),
+                'tree_sha'   : tree_sha,
+                'commit_sha' : commit_sha, }
 
         return res
 
@@ -221,14 +225,16 @@ def blob(arg):
 def path(arg):
     ''' main.py -> path relative to git topdir if path exists'''
 
-    r, sha = run('git log --all -n1 --format=%%T -- "%s"' % arg)
+    r, sha = run('git log --all -n1 --format="%%T %%H" -- "%s"' % arg)
+    tree_sha, commit_sha = sha.split()
 
     if sha:
         r, topdir = run('git rev-parse --show-toplevel')
 
         res = { 'type' : LT.path,
-                'sha'  : None,
-                'path' : relpath(arg, topdir) }
+                'path' : relpath(arg, topdir),
+                'tree_sha'   : tree_sha,
+                'commit_sha' : commit_sha, }
 
         return res
 
@@ -308,7 +314,7 @@ def main():
         link = rb.branch(res['ref'])
 
     elif t in (LT.path, LT.blob):
-        link = rb.path(res['path'], res['sha'], raw=raw)
+        link = rb.path(res['path'], res['tree_sha'], res['commit_sha'], raw=raw)
 
     elif t == LT.unknown:
         exit(1)

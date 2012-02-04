@@ -26,7 +26,10 @@ response_map = {
         'http://hjemli.net/git/cgit/tag/?id=v0.8.3',
 
     ('path', 'tests/setup.sh'):
-        'http://hjemli.net/git/cgit/tree/tests/setup.sh',
+        'http://hjemli.net/git/cgit/tree/tests/setup.sh/?tree=abbd6803bce9a3af800132398c6154a617e46abf',
+
+    ('path01', 'tests/'):
+        'http://hjemli.net/git/cgit/tree/tests/?tree=abbd6803bce9a3af800132398c6154a617e46abf',
 
     ('blob', 'HEAD~10:tests/setup.sh'):
         'http://hjemli.net/git/cgit/tree/tests/setup.sh/?tree=abbd6803bce9a3af800132398c6154a617e46abf',

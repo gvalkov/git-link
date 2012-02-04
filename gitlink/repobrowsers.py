@@ -80,12 +80,11 @@ class CgitBrowser(RepoBrowser):
         return self.join('tag', '?id=%s' % name)
 
     def path(self, path, tree=None, commit=None, raw=False):
+        url = [self.url, 'tree', path]
         if tree:
-            url = self.join('tree', path, '?tree=%s' % tree)
-        elif commit:
-            url = self.join('tree', path, '?id=%s' % tree)
-        else:
-            url = self.join('tree', path)
+            url.append('?tree=%s' % tree)
+
+        url = pjoin(*url)
 
         if raw:
             url = url.replace('tree', 'plain', 1)
