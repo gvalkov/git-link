@@ -2,12 +2,15 @@
 # encoding: utf-8
 
 import os, sys
+import mechanize
 
 from shutil import rmtree
 from tempfile import mkdtemp
 from functools import partial
-from subprocess import call, check_call
+from subprocess import call, check_call, check_output
 from os.path import dirname, abspath, join as pjoin, isdir
+
+from BeautifulSoup import BeautifulSoup as soup
 
 
 here = dirname(abspath(__file__))
@@ -41,21 +44,22 @@ class Repo(object):
 
 def get_soup(url):
     b = mechanize.Browser() ; b.open(url)
-    return soup(b.get_html())
+    return soup(b.response().read())
 
 
 def create_tests(suite, env, response_map, link_verifier=None):
     def _create(challenge, response, method):
         @suite.test
         def anon(repo):
-            anon.__doc__ = method
             cmd = 'git link %s' % challenge
+            anon.__doc__ = '%s - %s' % (method, cmd)
+
             res = env.run(cmd, expect_stderr=True).stdout.rstrip('\n')
 
-            assert res == response, '%s == %s' % (res, response)
+            assert res == response, res + ' == ' + response
 
             if callable(link_verifier):
-                assert link_verifier(res)
+                assert link_verifier(res), 'link not reachable'
 
     for challenge, response in response_map.items():
         method, challenge = challenge

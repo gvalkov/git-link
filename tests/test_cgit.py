@@ -53,9 +53,13 @@ def setup():
         pass
 
 
+def validate_url(url):
+    res = call('curl -sI %s | grep -iq "404 Not found"' % url, shell=True)
+    return bool(res)
+
+
 env = TestFileEnvironment(test_output_dir, cwd=co_dir)
-create_tests(cgit, env, response_map)
+create_tests(cgit, env, response_map, validate_url)
 
 if __name__ == '__main__':
     cgit.main()
-

@@ -7,7 +7,7 @@ from gitlink.version import version
 
 here = dirname(__file__)
 
-tests_require = ('attest', 'scripttest')
+tests_require = ('attest', 'scripttest', 'mechanize', 'BeautifulSoup')
 
 classifiers = (
     'Environment :: Console',
