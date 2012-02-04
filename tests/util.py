@@ -14,8 +14,8 @@ from BeautifulSoup import BeautifulSoup as soup
 
 
 here = dirname(abspath(__file__))
-test_output_dir = pjoin(here, './test-output')
-test_repo_dir = pjoin(here, './test-repos')
+test_output_dir = pjoin(here, 'test-output')
+test_repo_dir = pjoin(here, 'test-repos')
 
 
 class Repo(object):

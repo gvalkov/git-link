@@ -47,6 +47,70 @@ class LinkType(object):
 class GitwebBrowser(RepoBrowser):
     ''' gitweb - git's default web interface '''
 
+    options = {
+        'head-view' : {
+            'help'    : 'default head view',
+            'choices' : ('shortlog', 'log', 'tree'),
+        },
+        'commit-view' : {
+            'help'    : 'default commit view',
+            'choices' : ('commit', 'commitdiff', 'tree'),
+        },
+        'tag-view' : {
+            'help'    : 'default tag view',
+            'choices' : ('commit', 'shortlog', 'log'),
+        },
+    }
+
+    def __init__(self, url,
+                 head_view='shortlog',
+                 commit_view='commitdiff',
+                 tag_view='commit'):
+
+        self.url = url.rstrip('/')
+
+        self.tag_view = tag_view
+        self.head_view = head_view
+        self.commit_view = commit_view
+
+    def commit(self, sha):
+        l = (self.url, 'a=%s' % self.commit_view, 'h=%s' % sha)
+        return ';'.join(l)
+
+    def tree(self, sha, path=None):
+        l = [self.url, 'a=tree', 'h=%s' % sha]
+        if path: l.append('f=%s' % path)
+        return ';'.join(l)
+
+    def branch(self, ref):
+        shortref = ref.split('/')[-1] #todo: wrong
+        l = (self.url, 'a=%s' % self.head_view, 'h=%s' % shortref)
+        return ';'.join(l)
+
+    def tag(self, name):
+        l = (self.url, 'a=%s' % self.tag_view, 'h=%s' % name)
+        return ';'.join(l)
+
+    def blob(self, sha, path, tree=None, raw=False):
+        if tree and tree == 'HEAD^{tree}':
+            tree = None
+
+        l = [self.url, 'a=blob', 'h=%s' % sha]
+
+        if path:
+            l.append('f=%s' % path)
+
+        url =  ';'.join(l)
+
+        if raw:
+            url = url.replace('a=blob', 'a=blob_plain', 1)
+
+        return url
+
+    def path(self, path, tree=None):
+        l = (self.url, 'a=tree', 'f=%s' % path, 'h=%s' % tree)
+        return ';'.join(l)
+
 
 class RepoOrCzBrowser(RepoBrowser):
     ''' repo.or.cz public git hosting '''
