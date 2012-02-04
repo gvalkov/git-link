@@ -305,7 +305,7 @@ def main():
         link = rb.tag(arg)
 
     elif t == LT.branch:
-        link = rb.branch(res['shortref'])
+        link = rb.branch(res['ref'])
 
     elif t in (LT.path, LT.blob):
         link = rb.path(res['path'], res['sha'], raw=raw)
