@@ -54,7 +54,7 @@ def setup():
 
 
 def validate_url(url):
-    res = call('curl -sI %s | grep -iq "404 Not found"' % url, shell=True)
+    res = call('curl -sI "%s" | grep -iq "404 Not found"' % url, shell=True)
     return bool(res)
 
 
