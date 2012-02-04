@@ -39,17 +39,24 @@ class Repo(object):
         os.chdir(self.local)
 
 
-def create_tests(suite, env, response_map):
-    run = partial(env.run, expect_stderr=True)
+def get_soup(url):
+    b = mechanize.Browser() ; b.open(url)
+    return soup(b.get_html())
+
+
+def create_tests(suite, env, response_map, link_verifier=None):
+    def _create(challenge, response, method):
+        @suite.test
+        def anon(repo):
+            anon.__doc__ = method
+            cmd = 'git link %s' % challenge
+            res = env.run(cmd, expect_stderr=True).stdout.rstrip('\n')
+
+            assert res == response, '%s == %s' % (res, response)
+
+            if callable(link_verifier):
+                assert link_verifier(res)
 
     for challenge, response in response_map.items():
         method, challenge = challenge
-        def _helper():
-            cmd = 'git link %s' % challenge
-            res = run(cmd).stdout.rstrip('\n')
-
-            assert res == response
-
-        _helper.__doc__ = method
-        suite.test(_helper)
-
+        _create(challenge, response, method)
