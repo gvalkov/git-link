@@ -19,7 +19,7 @@ response_map = {
     ('tree', '33e28db20cbae2aa513ccec38c7d4706654eed46'):
         'http://hjemli.net/git/cgit/tree/?tree=33e28db20cbae2aa513ccec38c7d4706654eed46',
 
-    ('branch', 'wip'):
+    ('branch', 'origin/wip'):
         'http://hjemli.net/git/cgit/log/?h=wip',
 
     ('tag', 'v0.8.3'):

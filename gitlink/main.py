@@ -236,13 +236,13 @@ def path(arg):
 def branch(arg):
     ''' check if arg is a branch pointer '''
 
-    r, sha = run('git show-ref --heads "%s"' % arg)
+    r, sha = run('git show-ref "%s"' % arg)
+    sha = sha.splitlines()[-1]
     sha, ref = sha.split(' ')
 
     res = { 'type' : LT.branch,
             'sha' : sha,
-            'ref' : ref,
-            'shortref' : ref.split('/')[-1] }
+            'ref' : ref }
 
     return res
 
