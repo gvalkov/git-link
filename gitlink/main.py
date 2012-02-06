@@ -24,7 +24,7 @@ Options:
   -h, --help            show this help message and exit
   -v, --version         show version and exit
   -c, --clipboard       copy link to clipboard (overwrites link.clipboard)
-  -u, --url <url>       repo browser base url (overwrites link.url)
+  -u, --url <url>       repo browser url (overwrites link.url)
   -b, --browser <type>  repo browser type (overwrites link.browser)
   -r, --raw             show raw blob if possible
 
@@ -37,7 +37,7 @@ Configuration:
   git config --add link.clipboard false|true
 
 Examples:
-  git link HEAD~10       -> url to 10th commit prior to HEAD
+  git link HEAD~10       -> url to 10th commit before HEAD
   git link v0.1.0^{tree} -> url to tree object at tag v0.1.0
   git link master:file   -> url to file in branch master
   git link path/file     -> url to path/file in current branch
