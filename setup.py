@@ -46,10 +46,40 @@ kw = {
         'console_scripts'  : ['git-link = gitlink.main:main']
     },
 
+    'data_files'           : [('share/man/man1', ['doc/git-link.1'])],
+
     'tests_require'        : tests_require,
     'test_loader'          : 'attest:auto_reporter.test_loader',
     'test_suite'           : 'tests.all',
+
+    'zip_safe'             : False,
 }
 
+
+from distutils.command.build import build
+from distutils.core import Command
+
+class BuildDoc(Command):
+    description = 'Generate man page'
+
+    source = 'doc/git-link-man1.rst'
+    dest = 'doc/git-link.1'
+
+    user_options = []
+
+    def initialize_options(self): pass
+    def finalize_options(self): pass
+
+    def run(self):
+        from subprocess import check_call as c
+
+        print 'updating version: %s' % version()
+        c('sed -i -e "s,\(:Version: *\).*,\\1%s," %s' % (version(), self.source), shell=True)
+
+        print 'generating man page: %s' % self.dest
+        c('rst2man %s > %s' % (self.source, self.dest), shell=True)
+
+
+kw['cmdclass'] = {'doc' : BuildDoc}
 
 setup(**kw)
