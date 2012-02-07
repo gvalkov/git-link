@@ -282,6 +282,7 @@ def path(arg):
         res['path'] = path
         res['sha']  = sha # tree or blob sha
         res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
+        res['commit_sha'] = None
 
     return res
 
@@ -361,7 +362,7 @@ def main():
         link = rb.branch(r['ref'])
 
     elif t == LT.blob:
-        link = rb.blob(r['sha'], r['path'], r['tree_sha'], raw=raw)
+        link = rb.blob(r['sha'], r['path'], r['tree_sha'], r['commit_sha'], raw=raw)
 
     elif t == LT.path:
         link = rb.path(r['path'], r['sha'])

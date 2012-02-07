@@ -91,7 +91,7 @@ class GitwebBrowser(RepoBrowser):
         l = (self.url, 'a=%s' % self.tag_view, 'h=%s' % name)
         return ';'.join(l)
 
-    def blob(self, sha, path, tree=None, raw=False):
+    def blob(self, sha, path, tree=None, commit=None, raw=False):
         if tree and tree == 'HEAD^{tree}':
             tree = None
 
@@ -143,7 +143,7 @@ class CgitBrowser(RepoBrowser):
     def tag(self, name):
         return self.join('tag', '?id=%s' % name)
 
-    def blob(self, sha, path, tree=None, raw=False):
+    def blob(self, sha, path, tree=None, commit=None, raw=False):
         if tree and tree == 'HEAD^{tree}':
             tree = None
 
