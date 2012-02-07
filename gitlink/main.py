@@ -147,9 +147,10 @@ def git_cat_commit(treeish):
 
     r, out = run('git cat-file commit %s' % treeish)
     out = out.splitlines()[:4]
-
     res = dict([i.split(' ', 1) for i in out])
-    r, res['sha'] = run('git show -s --format="%%H" "%s"' % treeish)
+
+    r, out = run('git show -s --format="%%H" "%s"' % treeish)
+    res['sha'] = out.splitlines()[-1]
 
     return res
 
