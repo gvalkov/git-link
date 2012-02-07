@@ -8,8 +8,13 @@ from tests.util import *
 from attest import Tests
 from scripttest import TestFileEnvironment
 
-repourl = 'git@github.com:gvalkov/rsstail.py.git'
-co_dir = '%s/github' % test_repo_dir
+
+github = Tests()
+
+url   = 'git@github.com:gvalkov/rsstail.py.git'
+codir = '%s/github' % test_repo_dir
+browserurl  = 'https://github.com/gvalkov/rsstail.py'
+browsername = 'github'
 
 
 response_map = {
@@ -33,27 +38,10 @@ response_map = {
 }
 
 
-github = Tests()
-repo = False
+ctx = create_test_context(github, url, codir, browsername, browserurl)
+github.context(ctx)
 
-
-@github.context
-def setup():
-    global repo
-    if not repo:
-        repo = Repo(repourl, co_dir)
-        repo.clone()
-        repo.config('link.browser', 'github')
-        repo.config('link.url', 'https://github.com/gvalkov/rsstail.py')
-
-    try:
-        repo.chdir()
-        yield repo
-    finally:
-        pass
-
-
-env = TestFileEnvironment(test_output_dir, cwd=co_dir)
+env = TestFileEnvironment(test_output_dir, cwd=codir)
 create_tests(github, env, response_map, validate_url_404)
 
 if __name__ == '__main__':

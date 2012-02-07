@@ -8,8 +8,13 @@ from tests.util import *
 from attest import Tests
 from scripttest import TestFileEnvironment
 
-repourl = 'http://git.naquadah.org/git/oocairo.git'
-co_dir = '%s/gitweb' % test_repo_dir
+
+gitweb = Tests()
+
+url   = 'http://git.naquadah.org/git/oocairo.git'
+codir = '%s/gitweb' % test_repo_dir
+browserurl  = 'http://git.naquadah.org/?p=oocairo.git'
+browsername = 'gitweb'
 
 
 response_map = {
@@ -36,27 +41,10 @@ response_map = {
 }
 
 
-gitweb = Tests()
-repo = False
+ctx = create_test_context(gitweb, url, codir, browsername, browserurl)
+gitweb.context(ctx)
 
-
-@gitweb.context
-def setup():
-    global repo
-    if not repo:
-        repo = Repo(repourl, co_dir)
-        repo.clone()
-        repo.config('link.browser', 'gitweb')
-        repo.config('link.url', 'http://git.naquadah.org/?p=oocairo.git')
-
-    try:
-        repo.chdir()
-        yield repo
-    finally:
-        pass
-
-
-env = TestFileEnvironment(test_output_dir, cwd=co_dir)
+env = TestFileEnvironment(test_output_dir, cwd=codir)
 create_tests(gitweb, env, response_map, validate_url_404)
 
 if __name__ == '__main__':

@@ -44,6 +44,25 @@ def validate_url_404(url):
     return bool(res)
 
 
+def create_test_context(suite, url, co_dir, name, browser_url):
+    suite.repo = None
+    def inner():
+
+        if not suite.repo:
+            suite. repo = Repo(url, co_dir)
+            suite. repo.clone()
+            suite. repo.config('link.browser', name)
+            suite. repo.config('link.url', browser_url)
+
+        try:
+            suite.repo.chdir()
+            yield suite.repo
+        finally:
+            pass
+
+    return inner
+
+
 def create_tests(suite, env, response_map, link_verifier=None):
     def _create(challenge, response, method):
         @suite.test

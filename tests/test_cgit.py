@@ -8,8 +8,13 @@ from tests.util import *
 from attest import Tests
 from scripttest import TestFileEnvironment
 
-repourl = 'http://hjemli.net/git/cgit'
-co_dir = '%s/cgit' % test_repo_dir
+
+cgit = Tests()
+
+url   = 'http://hjemli.net/git/cgit'
+codir = '%s/cgit' % test_repo_dir
+browserurl  = url
+browsername = 'cgit'
 
 
 response_map = {
@@ -36,27 +41,10 @@ response_map = {
 }
 
 
-cgit = Tests()
-repo = False
+ctx = create_test_context(cgit, url, codir, browsername, browserurl)
+cgit.context(ctx)
 
-
-@cgit.context
-def setup():
-    global repo
-    if not repo:
-        repo = Repo(repourl, co_dir)
-        repo.clone()
-        repo.config('link.browser', 'cgit')
-        repo.config('link.url', repourl)
-
-    try:
-        repo.chdir()
-        yield repo
-    finally:
-        pass
-
-
-env = TestFileEnvironment(test_output_dir, cwd=co_dir)
+env = TestFileEnvironment(test_output_dir, cwd=codir)
 create_tests(cgit, env, response_map, validate_url_404)
 
 if __name__ == '__main__':
