@@ -282,9 +282,9 @@ def path(arg):
         res['path'] = path
         res['sha']  = sha # tree or blob sha
         res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
-        res['commit_sha'] = None
+        res['commit_sha'] = git_cat_commit('HEAD')['sha']
 
-    return res
+    return res # @bug
 
 
 def branch(arg):
@@ -365,7 +365,7 @@ def main():
         link = rb.blob(r['sha'], r['path'], r['tree_sha'], r['commit_sha'], raw=raw)
 
     elif t == LT.path:
-        link = rb.path(r['path'], r['sha'])
+        link = rb.path(r['path'], r['sha'], r['commit_sha'])
 
     elif t == LT.unknown:
         exit(1)

@@ -4,10 +4,12 @@
 from attest import Tests
 from tests.test_cgit import cgit
 from tests.test_gitweb import gitweb
+from tests.test_github import github
 
 tests = (
     cgit,
     gitweb,
+    github,
 )
 
 all = Tests(tests)

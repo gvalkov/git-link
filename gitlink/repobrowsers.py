@@ -107,7 +107,7 @@ class GitwebBrowser(RepoBrowser):
 
         return url
 
-    def path(self, path, tree=None):
+    def path(self, path, tree=None, commit=None):
         l = (self.url, 'a=tree', 'f=%s' % path, 'h=%s' % tree)
         return ';'.join(l)
 
@@ -118,6 +118,34 @@ class RepoOrCzBrowser(RepoBrowser):
 
 class GithubBrowser(RepoBrowser):
     ''' github public repositories '''
+
+    def __init__(self, url):
+        self.url = url
+
+    def commit(self, sha):
+        return self.join('commit', sha)
+
+    def tree(self, sha):
+        ''' TBD '''
+
+    def branch(self, ref):
+        shortref = ref.split('/')[-1]
+        return self.join('tree', shortref)
+
+    def tag(self, name):
+        return self.join('tree', name)
+
+    def blob(self, sha, path, tree=None, commit=None, raw=False):
+        url = self.join('tree', commit, path) # @bug
+
+        if raw:
+            url = url.replace('github.com', 'raw.github.com', 1)
+            url = url.replace('/tree/', '/', 1)
+
+        return url
+
+    def path(self, path, tree, commit):
+        return self.join('tree', commit, path)
 
 
 class GithubPrivateBrowser(RepoBrowser):
@@ -154,7 +182,7 @@ class CgitBrowser(RepoBrowser):
 
         return url
 
-    def path(self, path, tree=None):
+    def path(self, path, tree=None, commit=None):
         url = [self.url, 'tree', path]
         if tree:
             url.append('?tree=%s' % tree)
