@@ -57,7 +57,7 @@ def setup():
 
 
 env = TestFileEnvironment(test_output_dir, cwd=co_dir)
-create_tests(gitweb, env, response_map)
+create_tests(gitweb, env, response_map, validate_url_404)
 
 if __name__ == '__main__':
     gitweb.main()

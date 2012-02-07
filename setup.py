@@ -7,7 +7,7 @@ from gitlink.version import version
 
 here = dirname(__file__)
 
-tests_require = ('attest', 'scripttest', 'mechanize', 'BeautifulSoup')
+tests_require = ('attest', 'scripttest')
 
 classifiers = (
     'Environment :: Console',
@@ -36,7 +36,7 @@ kw = {
 
     'license'              : 'New BSD License',
 
-    'keywords'             : 'git gitweb cgit subcommand',
+    'keywords'             : 'git gitweb github cgit subcommand',
     'classifiers'          : classifiers,
 
     'url'                  : 'https://github.com/gvalkov/gitlink',

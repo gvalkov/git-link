@@ -2,15 +2,12 @@
 # encoding: utf-8
 
 import os, sys
-import mechanize
 
 from shutil import rmtree
 from tempfile import mkdtemp
 from functools import partial
 from subprocess import call, check_call, check_output
 from os.path import dirname, abspath, join as pjoin, isdir
-
-from BeautifulSoup import BeautifulSoup as soup
 
 
 here = dirname(abspath(__file__))
@@ -42,9 +39,9 @@ class Repo(object):
         os.chdir(self.local)
 
 
-def get_soup(url):
-    b = mechanize.Browser() ; b.open(url)
-    return soup(b.response().read())
+def validate_url_404(url):
+    res = call('curl -sI "%s" | grep -iq "404 Not found"' % url, shell=True)
+    return bool(res)
 
 
 def create_tests(suite, env, response_map, link_verifier=None):
