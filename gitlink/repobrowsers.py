@@ -83,8 +83,7 @@ class GitwebBrowser(RepoBrowser):
         return ';'.join(l)
 
     def branch(self, ref):
-        shortref = ref.split('/')[-1] #todo: wrong
-        l = (self.url, 'a=%s' % self.head_view, 'h=%s' % shortref)
+        l = (self.url, 'a=%s' % self.head_view, 'h=%s' % ref['shortref'])
         return ';'.join(l)
 
     def tag(self, name):
@@ -129,8 +128,7 @@ class GithubBrowser(RepoBrowser):
         ''' TBD '''
 
     def branch(self, ref):
-        shortref = ref.split('/')[-1]
-        return self.join('tree', shortref)
+        return self.join('tree', ref['shortref'])
 
     def tag(self, name):
         return self.join('tree', name)
@@ -165,8 +163,7 @@ class CgitBrowser(RepoBrowser):
         return self.join('tree', '?tree=%s' % sha)
 
     def branch(self, ref):
-        shortref = ref.split('/')[-1]
-        return self.join('log', '?h=%s' % shortref)
+        return self.join('log', '?h=%s' % ref['shortref'])
 
     def tag(self, name):
         return self.join('tag', '?id=%s' % name)

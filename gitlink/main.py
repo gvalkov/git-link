@@ -296,7 +296,8 @@ def branch(arg):
 
     res = { 'type' : LT.branch,
             'sha' : sha,
-            'ref' : ref }
+            'ref' : ref,
+            'shortref' : arg, }
 
     return res
 
