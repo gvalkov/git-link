@@ -136,20 +136,20 @@ def get_config(section, strip_section=True):
     return dict(out)
 
 
-def git_cat_commit(treeish):
-    ''' treeish => {
-          'commit'   : sha of commit pointed by treeish,
+def git_cat_commit(commitish):
+    ''' commitish => {
+          'commit'   : sha of commit pointed by commit-ish,
           'tree'     : '',
           'parent'   : '',
           'author'   : '',
           'comitter' : '', }
     '''
 
-    r, out = run('git cat-file commit %s' % treeish)
+    r, out = run('git cat-file commit %s' % commitish)
     out = out.splitlines()[:4]
     res = dict([i.split(' ', 1) for i in out])
 
-    r, out = run('git show -s --format="%%H" "%s"' % treeish)
+    r, out = run('git show -s --format="%%H" "%s"' % commitish)
     res['sha'] = out.splitlines()[-1]
 
     return res
@@ -219,8 +219,8 @@ def blob(arg):
         'path'       : None, }
 
     if ':' in arg:
-        treeish, path = arg.split(':', 1)
-        commitd = git_cat_commit(treeish)
+        commitish, path = arg.split(':', 1)
+        commitd = git_cat_commit(commitish)
 
         sha, t, tree_sha = git_path(path.split('/'), commitd['tree'])
 
@@ -248,7 +248,7 @@ def lstree(sha):
 
 def git_path(arg, tree_sha='HEAD^{tree}'):
     ''' :param arg: a path.split('/') relative to root of the wc
-        :param tree_sha: treeish to search
+        :param tree_sha: tree-ish to search
 
         if path leads to a  blob object return:
             blob sha, 'blob', tree sha
