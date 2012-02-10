@@ -284,7 +284,7 @@ def path(arg):
         res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
         res['commit_sha'] = git_cat_commit('HEAD')['sha']
 
-    return res # @bug
+    return res # :bug:
 
 
 def branch(arg):
@@ -303,33 +303,28 @@ def branch(arg):
 
 
 def diff(arg):
+    ''' :todo: '''
     pass
 
 
 def expand_arg(arg):
+    ''' determine argument type and prepare response dict '''
+
     r, t = run('git cat-file -t %s' % arg)
 
     res = {}
 
     if t == 'commit' and arg != 'HEAD':
-        try:
-            res = branch(arg)
-        except:
-            res = commit(arg)
+        try:    res = branch(arg)
+        except: res = commit(arg)
 
-    elif t == 'commit':
-        res = commit(arg)
-
-    elif t == 'tree':
-        res = tree(arg)
-
-    elif t == 'blob':
-        res = blob(arg)
+    elif t == 'commit': res = commit(arg)
+    elif t == 'tree':   res = tree(arg)
+    elif t == 'blob':   res = blob(arg)
 
     elif t == 'tag':
         res = { 'type' : LT.tag, 'sha' : None }
 
-    # determine if arg is a path
     else:
         res = path(arg)
 
@@ -352,7 +347,6 @@ def main():
 
     if t == LT.commit:
         link = rb.commit(r['sha'])
-
     elif t == LT.tree:
         link = rb.tree(r['sha'])
 

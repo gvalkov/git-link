@@ -28,6 +28,14 @@ class RepoBrowser(object):
         ''' Get url for tree object '''
         raise NotImplementedError
 
+    def path(self, path, tree, commit):
+        ''' Get url for a path relative to the root of repository '''
+        raise NotImplementedError
+
+    def blob(self, sha, path, tree, commit, raw):
+        ''' Get url for a blob object '''
+        raise NotImplementedError
+
     def join(self, *args):
         l = [self.url] ; l.extend(args)
         return pjoin(*l)
