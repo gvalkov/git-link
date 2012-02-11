@@ -39,7 +39,7 @@ kw = {
     'keywords'             : 'git gitweb github cgit subcommand',
     'classifiers'          : classifiers,
 
-    'url'                  : 'https://github.com/gvalkov/gitlink',
+    'url'                  : 'https://github.com/gvalkov/git-link',
 
     'packages'             : ('gitlink',),
     'entry_points'         : {
