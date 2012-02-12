@@ -154,8 +154,9 @@ class GithubBrowser(RepoBrowser):
         return self.join('tree', commit, path)
 
 
-class GithubPrivateBrowser(RepoBrowser):
-    ''' github private repositories '''
+class GithubPrivateBrowser(GithubBrowser):
+    ''' github private repositories (I don't know how a private repo looks
+        like, but I assume it's the same) '''
 
 
 class CgitBrowser(RepoBrowser):
