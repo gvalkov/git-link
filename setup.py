@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from os import getuid
 from setuptools import setup
-from os.path import dirname, join as pjoin
+from os.path import dirname, isdir, join as pjoin
 from gitlink.version import version
 
 here = dirname(__file__)
@@ -81,5 +82,18 @@ class BuildDoc(Command):
 
 
 kw['cmdclass'] = {'doc' : BuildDoc}
+
+
+# try to install bash and zsh completions (emphasis on the *try*)
+if getuid() == 0:
+    if isdir('/etc/bash_completion.d'):
+        t = ('/etc/bash_completion.d/', ['etc/git-link.sh'])
+        kw['data_files'].append(t)
+
+    # this is only valid for most debians
+    if isdir('/usr/share/zsh/functions/Completion/Unix/'):
+        t = ('/usr/share/zsh/functions/Completion/Unix/', ['etc/_git-link'])
+        kw['data_files'].append(t)
+
 
 setup(**kw)

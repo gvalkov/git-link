@@ -1,3 +1,5 @@
 include README.rst
 include doc/*.rst
 include doc/*.1
+include etc/git-link.sh
+include etc/_git-link
