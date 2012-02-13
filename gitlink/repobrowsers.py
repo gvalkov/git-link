@@ -16,7 +16,7 @@ class RepoBrowser(object):
         ''' Get url for commit object '''
         raise NotImplementedError
 
-    def branch(self, ref):
+    def branch(self, ref, shortref):
         ''' Get url for branch name '''
         raise NotImplementedError
 
@@ -90,8 +90,8 @@ class GitwebBrowser(RepoBrowser):
         if path: l.append('f=%s' % path)
         return ';'.join(l)
 
-    def branch(self, ref):
-        l = (self.url, 'a=%s' % self.head_view, 'h=%s' % ref['shortref'])
+    def branch(self, ref, shortref):
+        l = (self.url, 'a=%s' % self.head_view, 'h=%s' % shortref)
         return ';'.join(l)
 
     def tag(self, name):
@@ -135,8 +135,8 @@ class GithubBrowser(RepoBrowser):
     def tree(self, sha):
         ''' TBD '''
 
-    def branch(self, ref):
-        return self.join('tree', ref['shortref'])
+    def branch(self, ref, shortref):
+        return self.join('tree', shortref)
 
     def tag(self, name):
         return self.join('tree', name)
@@ -171,8 +171,8 @@ class CgitBrowser(RepoBrowser):
     def tree(self, sha):
         return self.join('tree', '?tree=%s' % sha)
 
-    def branch(self, ref):
-        return self.join('log', '?h=%s' % ref['shortref'])
+    def branch(self, ref, shortref):
+        return self.join('log', '?h=%s' % shortref)
 
     def tag(self, name):
         return self.join('tag', '?id=%s' % name)
@@ -196,11 +196,44 @@ class CgitBrowser(RepoBrowser):
         return pjoin(*url)
 
 
+class GitoriousBrowser(RepoBrowser):
+    ''' gitorious - free hosting for open source projects using git '''
+
+    def __init__(self, url):
+        self.url = url
+
+    def commit(self, sha):
+        return self.join('commit', sha)
+
+    def tree(self, sha):
+        ''' tbd '''
+
+    def branch(self, ref, shortref):
+        self.commit(shortref)
+
+    def tag(self, name):
+        return self.commit(name)
+
+    def blob(self, sha, path, tree=None, commit=None, raw=False):
+        if not raw:
+            url = self.path('blobs', commit, path)
+        else:
+            url = self.path('blobs', 'raw', commit, path)
+
+        return url
+
+    def path(self, path, tree=None, commit=None):
+        url = self.join('trees', commit, path)
+        return url
+
+
+
 names = {
     'cgit'           : CgitBrowser,
     'gitweb'         : GitwebBrowser,
     'repo.or.cz'     : RepoOrCzBrowser,
     'github'         : GithubBrowser,
     'github-private' : GithubPrivateBrowser,
+    'gitorious'      : GitoriousBrowser,
 }
 

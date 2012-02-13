@@ -27,7 +27,7 @@ Usage
       -r, --raw             show raw blob if possible
 
     Available repo browsers:
-      cgit github-private github gitweb repo.or.cz
+      cgit github-private github gitweb repo.or.cz gitorious
 
     Configuration:
       git config --add link.url <repo browser url>

@@ -354,7 +354,7 @@ def main():
         link = rb.tag(arg)
 
     elif t == LT.branch:
-        link = rb.branch(r['ref'])
+        link = rb.branch(r['ref'], r['shortref'])
 
     elif t == LT.blob:
         link = rb.blob(r['sha'], r['path'], r['tree_sha'], r['commit_sha'], raw=raw)
