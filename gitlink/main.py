@@ -6,7 +6,6 @@ Git subcommand for getting a repo browser link to a git object.
 '''
 
 import optparse
-import textwrap
 import subprocess as sub
 
 from sys import argv, exit, stderr, stdout
@@ -290,14 +289,22 @@ def path(arg):
 def branch(arg):
     ''' check if arg is a branch pointer '''
 
+    remotes = run('git remote')[1].splitlines()
+
     r, sha = run('git show-ref "%s"' % arg)
     sha = sha.splitlines()[-1]
     sha, ref = sha.split(' ')
 
+    shortref = None
+    for i in remotes:
+        if i in ref:
+            shortref = ref.replace('refs/remotes/%s/' % i, '')
+            break
+
     res = { 'type' : LT.branch,
             'sha' : sha,
             'ref' : ref,
-            'shortref' : arg, }
+            'shortref' : shortref, }
 
     return res
 

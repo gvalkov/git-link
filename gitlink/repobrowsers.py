@@ -168,6 +168,7 @@ class CgitBrowser(RepoBrowser):
         return self.join('tree', '?tree=%s' % sha)
 
     def branch(self, ref, shortref):
+        if not shortref: return None
         return self.join('log', '?h=%s' % shortref)
 
     def tag(self, name):
