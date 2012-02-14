@@ -159,12 +159,12 @@ def readopts():
 
     parser, opts, args = parseopt()
 
-    if len(argv) == 1 or opts.help or not args:
-        stderr.write(usage)
-        exit(0)
-
     if opts.version:
         stderr.write(version_verbose() + '\n')
+        exit(0)
+
+    if len(argv) == 1 or opts.help or not args:
+        stderr.write(usage)
         exit(0)
 
     cfg = get_config('link')
