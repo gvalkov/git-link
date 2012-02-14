@@ -7,7 +7,7 @@ object or path on the command line than it is to click your way to it through a
 web interface.  
 
 Git link can build urls for the following repo-browser:
-cgit_, gitweb_, github_, github-private_, repo.or.cz_
+cgit_, gitweb_, github_, github-private_
 
 
 Usage
@@ -27,7 +27,7 @@ Usage
       -r, --raw             show raw blob if possible
 
     Available repo browsers:
-      cgit github-private github gitweb repo.or.cz
+      cgit github-private github gitweb
 
     Configuration:
       git config --add link.url <repo browser url>
@@ -77,7 +77,7 @@ Shell completion
 
 Git link comes with shell completion for bash and zsh.
 
-    - **bash:** copy git-link.sh_ to ``/etc/bash_completion.d/``
+    - **bash:** copy git-link.sh_ to ``/etc/bash_completion.d/`` (TBD)
     - **zsh:**  copy git-link.zsh_ anywhere in ``$fpath``
 
 If you are installing system-wide, git link will attempt to place these files
@@ -88,7 +88,7 @@ Development
 -----------
 
 See repobrowsers.py_ and test_cgit.py_ if you are interested in adding a new
-repository browser.  Running ``python setup.py tests`` or ``tests/__init__.py``
+repository browser.  Running ``python setup.py test`` or ``tests/__init__.py``
 before committing is generally a good idea.
 
 Please make do without bringing in any external dependencies. As nice as

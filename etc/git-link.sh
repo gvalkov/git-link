@@ -10,7 +10,7 @@ _git_flow ()
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     opts="-h --help -v --version -c --clipboard -u --url -b --browser -r --raw"
-	#tbd
+	# tbd: leverage bash's git comlpetion 
 }
 
 # vim: ft=sh:

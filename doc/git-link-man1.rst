@@ -43,7 +43,6 @@ git-config(1) or on the command line::
     git link   --browser <url> --name <name> --clipboard ...
 
 
-
 EXAMPLES
 ========
 

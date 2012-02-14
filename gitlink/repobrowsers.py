@@ -119,10 +119,6 @@ class GitwebBrowser(RepoBrowser):
         return ';'.join(l)
 
 
-class RepoOrCzBrowser(RepoBrowser):
-    ''' repo.or.cz public git hosting '''
-
-
 class GithubBrowser(RepoBrowser):
     ''' github public repositories '''
 
@@ -199,7 +195,6 @@ class CgitBrowser(RepoBrowser):
 names = {
     'cgit'           : CgitBrowser,
     'gitweb'         : GitwebBrowser,
-    'repo.or.cz'     : RepoOrCzBrowser,
     'github'         : GithubBrowser,
     'github-private' : GithubPrivateBrowser,
 }
