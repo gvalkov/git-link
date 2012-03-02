@@ -28,11 +28,11 @@ class RepoBrowser(object):
         ''' Get url for tree object '''
         raise NotImplementedError
 
-    def path(self, path, tree, commit):
+    def path(self, path, tree, top_tree, commit):
         ''' Get url for a path relative to the root of repository '''
         raise NotImplementedError
 
-    def blob(self, sha, path, tree, commit, raw):
+    def blob(self, sha, path, tree, top_tree, commit, raw):
         ''' Get url for a blob object '''
         raise NotImplementedError
 
@@ -98,7 +98,7 @@ class GitwebBrowser(RepoBrowser):
         l = (self.url, 'a=%s' % self.tag_view, 'h=%s' % name)
         return ';'.join(l)
 
-    def blob(self, sha, path, tree=None, commit=None, raw=False):
+    def blob(self, sha, path, tree=None, top_tree=None, commit=None, raw=False):
         if tree and tree == 'HEAD^{tree}':
             tree = None
 
@@ -114,7 +114,7 @@ class GitwebBrowser(RepoBrowser):
 
         return url
 
-    def path(self, path, tree=None, commit=None):
+    def path(self, path, tree=None, top_tree=None, commit=None):
         l = (self.url, 'a=tree', 'f=%s' % path, 'h=%s' % tree)
         return ';'.join(l)
 
@@ -141,7 +141,7 @@ class GithubBrowser(RepoBrowser):
     def tag(self, name):
         return self.join('tree', name)
 
-    def blob(self, sha, path, tree=None, commit=None, raw=False):
+    def blob(self, sha, path, tree=None, top_tree=None, commit=None, raw=False):
         url = self.join('tree', commit, path) # @bug
 
         if raw:
@@ -150,7 +150,7 @@ class GithubBrowser(RepoBrowser):
 
         return url
 
-    def path(self, path, tree, commit):
+    def path(self, path, tree, top_tree, commit):
         return self.join('tree', commit, path)
 
 
@@ -177,21 +177,21 @@ class CgitBrowser(RepoBrowser):
     def tag(self, name):
         return self.join('tag', '?id=%s' % name)
 
-    def blob(self, sha, path, tree=None, commit=None, raw=False):
-        if tree and tree == 'HEAD^{tree}':
-            tree = None
+    def blob(self, sha, path, tree=None, top_tree=None, commit=None, raw=False):
+        if top_tree and top_tree == 'HEAD^{tree}':
+            top_tree = None
 
-        url = self.path(path, tree)
+        url = self.path(path, top_tree=top_tree)
 
         if raw:
             url = url.replace('tree', 'plain', 1)
 
         return url
 
-    def path(self, path, tree=None, commit=None):
+    def path(self, path, tree=None, top_tree=None, commit=None):
         url = [self.url, 'tree', path]
-        if tree:
-            url.append('?tree=%s' % tree)
+        if top_tree:
+            url.append('?tree=%s' % top_tree)
 
         return pjoin(*url)
 

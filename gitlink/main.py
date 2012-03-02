@@ -230,6 +230,7 @@ def blob(arg):
         res['commit_sha'] = commitd['sha']
         res['tree_sha']   = tree_sha
         res['sha']        = sha
+        res['top_tree_sha'] = tree('HEAD^{tree}')['sha']
     else:
         res['sha'] = arg
 
@@ -237,7 +238,7 @@ def blob(arg):
 
 
 def lstree(sha):
-    r, out = run('git ls-tree %s' % sha)
+    r, out = run('git ls-tree --full-tree %s' % sha)
 
     for line in out.splitlines():
         mode, type, sha = line.split(' ', 3)
@@ -282,6 +283,7 @@ def path(arg):
         res['path'] = path
         res['sha']  = sha # tree or blob sha
         res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
+        res['top_tree_sha'] = tree('HEAD^{tree}')['sha']
         res['commit_sha'] = git_cat_commit('HEAD')['sha']
 
     return res # :bug:
@@ -357,10 +359,10 @@ def main():
         link = rb.branch(r['ref'], r['shortref'])
 
     elif t == LT.blob:
-        link = rb.blob(r['sha'], r['path'], r['tree_sha'], r['commit_sha'], raw=raw)
+        link = rb.blob(r['sha'], r['path'], r['tree_sha'], r['top_tree_sha'], r['commit_sha'], raw=raw)
 
     elif t == LT.path:
-        link = rb.path(r['path'], r['sha'], r['commit_sha'])
+        link = rb.path(r['path'], r['sha'], r['top_tree_sha'], r['commit_sha'])
 
     elif t == LT.unknown:
         exit(1)
