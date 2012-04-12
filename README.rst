@@ -88,7 +88,7 @@ Development
 -----------
 
 See repobrowsers.py_ and test_cgit.py_ if you are interested in adding a new
-repository browser.  Running ``python setup.py test`` or ``tests/__init__.py``
+repository browser.  Running ``python setup.py test`` or ``py.test tests/``
 before committing is generally a good idea.
 
 Please make do without bringing in any external dependencies. As nice as

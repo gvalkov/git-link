@@ -8,7 +8,7 @@ from gitlink.version import version
 
 here = dirname(__file__)
 
-tests_require = ('attest', 'scripttest')
+tests_require = ('pytest', 'scripttest')
 
 classifiers = (
     'Environment :: Console',
@@ -50,8 +50,7 @@ kw = {
     'data_files'           : [('share/man/man1', ['doc/git-link.1'])],
 
     'tests_require'        : tests_require,
-    'test_loader'          : 'attest:auto_reporter.test_loader',
-    'test_suite'           : 'tests.all',
+    'cmdclass'             : {},
 
     'zip_safe'             : False,
 }
@@ -81,7 +80,17 @@ class BuildDoc(Command):
         c('rst2man %s > %s' % (self.source, self.dest), shell=True)
 
 
-kw['cmdclass'] = {'doc' : BuildDoc}
+class PyTest(Command):
+    user_options = []
+    def initialize_options(self): pass
+    def finalize_options(self):   pass
+    def run(self):
+        from subprocess import call
+        errno = call(('py.test', 'tests'))
+        raise SystemExit(errno)
+
+kw['cmdclass']['test'] = PyTest
+kw['cmdclass']['doc']  = BuildDoc
 
 
 # try to install bash and zsh completions (emphasis on the *try*)

@@ -9,6 +9,9 @@ from functools import partial
 from subprocess import call, check_call, check_output
 from os.path import dirname, abspath, join as pjoin, isdir
 
+from pytest import raises, set_trace, mark
+from scripttest import TestFileEnvironment
+
 
 here = dirname(abspath(__file__))
 test_output_dir = pjoin(here, 'test-output')
@@ -44,39 +47,18 @@ def validate_url_404(url):
     return bool(res)
 
 
-def create_test_context(suite, url, co_dir, name, browser_url):
-    suite.repo = None
-    def inner():
+def mk_gitlink(url, codir, browser, linkurl):
+    codir = '%s/%s' % (test_repo_dir, codir)
 
-        if not suite.repo:
-            suite. repo = Repo(url, co_dir)
-            suite. repo.clone()
-            suite. repo.config('link.browser', name)
-            suite. repo.config('link.url', browser_url)
+    repo = Repo(url, codir)
+    repo.clone()
+    repo.config('link.browser', browser)
+    repo.config('link.url', linkurl)
 
-        try:
-            suite.repo.chdir()
-            yield suite.repo
-        finally:
-            pass
+    def gitlink(args):
+        env = TestFileEnvironment(test_output_dir, cwd=codir)
+        cmd = 'git link %s' % args
+        res = env.run(cmd, expect_stderr=True)
+        return res.stdout.rstrip('\n')
 
-    return inner
-
-
-def create_tests(suite, env, response_map, link_verifier=None):
-    def _create(challenge, response, method):
-        @suite.test
-        def anon(repo):
-            cmd = 'git link %s' % challenge
-            anon.__doc__ = '%s - %s' % (method, cmd)
-
-            res = env.run(cmd, expect_stderr=True).stdout.rstrip('\n')
-
-            assert res == response, res + ' == ' + response
-
-            if callable(link_verifier):
-                assert link_verifier(res), 'link not reachable'
-
-    for challenge, response in response_map.items():
-        method, challenge = challenge
-        _create(challenge, response, method)
+    return gitlink
