@@ -31,6 +31,10 @@ class Repo(object):
         os.makedirs(self.local)
         check_call(cmd)
 
+    def init(self):
+        cmd = ('git', 'init', self.local)
+        check_call(cmd)
+
     def config(self, key, value):
         cmd = ('git', '--git-dir=%s/.git' % self.local, 'config', key, value)
         check_call(cmd)
