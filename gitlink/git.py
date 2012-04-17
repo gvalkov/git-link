@@ -2,9 +2,9 @@
 # encoding: utf-8
 
 from subprocess import Popen, PIPE
-from os.path import relpath, exists
+from os.path import relpath
 
-from gitlink.repobrowsers import names, LinkType as LT
+from gitlink.repobrowsers import LinkType as LT
 
 
 def run(*args, **kw):
@@ -57,6 +57,11 @@ def get_config(section, strip_section=True):
     return dict(out)
 
 
+def revparse(ish):
+    r, out = run('git rev-parse %s' % ish)
+    return out.rstrip('\n')
+
+
 def cat_commit(commitish):
     ''' commitish => {
           'commit'   : sha of commit pointed by commit-ish,
@@ -70,8 +75,7 @@ def cat_commit(commitish):
     out = out.splitlines()[:4]
     res = dict([i.split(' ', 1) for i in out])
 
-    r, out = run('git show -s --format="%%H" "%s"' % commitish)
-    res['sha'] = out.splitlines()[-1]
+    res['sha'] = revparse(commitish)
 
     return res
 
@@ -88,13 +92,8 @@ def commit(arg):
 def tree(arg):
     ''' HEAD~~^{tree} -> actual tree sha '''
 
-    if '^{tree}' in arg:
-        sha = arg.replace('^{tree}', '')
-        sha = cat_commit(sha)['tree']
-    else:
-        sha = arg
-
-    return { 'type' : LT.tree, 'sha' : sha }
+    return { 'type' : LT.tree,
+             'sha'  : revparse(arg) }
 
 
 def blob(arg):
@@ -173,7 +172,7 @@ def path(arg, top_tree_sha='HEAD^{tree}'):
     res['path'] = path
     res['sha']  = sha # tree or blob sha
     res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
-    res['top_tree_sha'] = tree(top_tree_sha)['sha']
+    res['top_tree_sha'] = revparse(top_tree_sha)
     res['commit_sha'] = cat_commit('HEAD')['sha']
 
     return res # :bug:

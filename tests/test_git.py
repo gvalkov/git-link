@@ -36,7 +36,7 @@ def test_cat_commit(repo):
     assert cat_commit('v0.1.0') == {
         'author': 'Georgi Valkov <georgi.t.valkov@gmail.com> 1329252276 +0200',
         'committer': 'Georgi Valkov <georgi.t.valkov@gmail.com> 1329252276 +0200',
-        'sha': 'f54a0b6ad8518babf440db870dc778acc84877a8',
+        'sha': '29faca327f595c01f795f9a2e9c27dca8aabcaee',
         'tree': '80f10ec249b6916adcf6c95f575a0125b8541c05',
         'parent': 'f5d981a75b18533c270d4aa4ffffa9fcf67f9a8b',
     }
