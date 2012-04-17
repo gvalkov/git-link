@@ -8,9 +8,10 @@ from tempfile import mkdtemp
 from functools import partial
 from subprocess import call, check_call, check_output
 from os.path import dirname, abspath, join as pjoin, isdir
+from cStringIO import StringIO
 
 from pytest import raises, set_trace, mark
-from scripttest import TestFileEnvironment
+from gitlink.main import main
 
 
 here = dirname(abspath(__file__))
@@ -60,9 +61,15 @@ def mk_gitlink(url, codir, browser, linkurl):
     repo.config('link.url', linkurl)
 
     def gitlink(args):
-        env = TestFileEnvironment(test_output_dir, cwd=codir)
-        cmd = 'git link %s' % args
-        res = env.run(cmd, expect_stderr=True)
-        return res.stdout.rstrip('\n')
+        os.chdir(codir)
+        oldargs = sys.argv[:]
+        out = StringIO()
+        try:
+            sys.argv = ['gitlink'] + args.split(' ')
+            main(out)
+        finally:
+            sys.argv = oldargs
+
+        return out.getvalue().rstrip('\n')
 
     return gitlink

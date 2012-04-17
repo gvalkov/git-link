@@ -140,7 +140,7 @@ def expand_arg(arg):
     return res
 
 
-def main():
+def main(out=stdout):
     url, browser, clipboard, args, raw = readopts()
 
     arg = args[0].rstrip('/')
@@ -178,7 +178,7 @@ def main():
             stderr.write(str(e)+'\n')
 
     if link:
-        stdout.write(link+'\n')
+        out.write(link+'\n')
 
 
 if __name__ == '__main__':
