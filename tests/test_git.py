@@ -74,27 +74,18 @@ def test_branch(repo):
 
 
 def test_path(repo):
-    assert path('gitlink/main.py', 'v0.1.0^{tree}') == {
-        'path': 'gitlink/main.py',
+    assert path('gitlink/main.py', 'v0.1.0') == {
         'tree_sha': 'b8ff9fc80e42bec20cfb1638f4efa0215fe4987a',
+        'commit_sha': '29faca327f595c01f795f9a2e9c27dca8aabcaee',
         'top_tree_sha': '80f10ec249b6916adcf6c95f575a0125b8541c05',
-        'type': LT.blob,
-        'commit_sha': '897590c334156bee9423280b97ddb41a16808358',
-        'sha': 'd930815a23f0cf53a471e2993bc42401926793fa'
-    }
-
-    assert path('main.py', 'b8ff9fc80e42bec20cfb1638f4efa0215fe4987a' ) == {
-        'tree_sha': 'b8ff9fc80e42bec20cfb1638f4efa0215fe4987a',
-        'commit_sha': '897590c334156bee9423280b97ddb41a16808358',
-        'top_tree_sha': 'b8ff9fc80e42bec20cfb1638f4efa0215fe4987a',
         'sha': 'd930815a23f0cf53a471e2993bc42401926793fa',
-        'path': 'main.py',
+        'path': 'gitlink/main.py',
         'type': LT.blob,
     }
 
-    assert path('tests', 'v0.1.0^{tree}') == {
-        'tree_sha': None,
-        'commit_sha': '897590c334156bee9423280b97ddb41a16808358',
+    assert path('tests', 'v0.1.0') == {
+        'tree_sha': 'None',
+        'commit_sha': '29faca327f595c01f795f9a2e9c27dca8aabcaee',
         'top_tree_sha': '80f10ec249b6916adcf6c95f575a0125b8541c05',
         'sha': '1a5bf01fcd47ff9936aac0344c587b616f081dfd',
         'path': 'tests',

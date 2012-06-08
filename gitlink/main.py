@@ -113,26 +113,32 @@ def readopts():
     return url, browser, clipboard, args, opts.raw
 
 
-def expand_arg(arg):
-    ''' determine argument type and prepare response dict '''
+def expand_args(ish, path):
+    ''' determine *ish type and prepare response dict '''
 
-    r, t = git.run('git cat-file -t %s' % arg)
+    if ish and path:
+        res = git.path(path, ish)
+        if not res:
+            raise Exception('invalid reference: %s -- %s' % (ish, path))
+        return res
+
+    r, t = git.run('git cat-file -t %s' % ish)
 
     res = {}
 
-    if t == 'commit' and arg != 'HEAD':
-        try:    res = git.branch(arg)
-        except: res = git.commit(arg)
+    if t == 'commit' and ish != 'HEAD':
+        try:    res = git.branch(ish)
+        except: res = git.commit(ish)
 
-    elif t == 'commit': res = git.commit(arg)
-    elif t == 'tree':   res = git.tree(arg)
-    elif t == 'blob':   res = git.blob(arg)
+    elif t == 'commit': res = git.commit(ish)
+    elif t == 'tree':   res = git.tree(ish)
+    elif t == 'blob':   res = git.blob(ish)
 
     elif t == 'tag':
         res = { 'type' : LT.tag, 'sha' : None }
 
     else:
-        res = git.path(arg)
+        res = git.path(ish, 'HEAD')
 
     if not res:
         res = {'type' : LT.unknown}
@@ -140,24 +146,17 @@ def expand_arg(arg):
     return res
 
 
-def main(out=stdout):
-    url, browser, clipboard, args, raw = readopts()
-
-    arg = args[0].rstrip('/')
-    res = r = expand_arg(arg)
-
-    t = res['type']
-
-    # instantiate repository browser
-    rb = names[browser](url)
+def get_link(r, rb, ish, raw=False):
+    t = r['type']
 
     if t == LT.commit:
         link = rb.commit(r['sha'])
+
     elif t == LT.tree:
         link = rb.tree(r['sha'])
 
     elif t == LT.tag:
-        link = rb.tag(arg)
+        link = rb.tag(ish)
 
     elif t == LT.branch:
         link = rb.branch(r['ref'], r['shortref'])
@@ -169,7 +168,31 @@ def main(out=stdout):
         link = rb.path(r['path'], r['sha'], r['commit_sha'])
 
     elif t == LT.unknown:
+        raise Exception('unhandled object type')
+
+    return link
+
+
+def main(out=stdout):
+    url, browser, clipboard, args, raw = readopts()
+
+    if len(args) == 2: ish, path = args
+    else: ish, path = args[0], None
+
+    # instantiate repository browser
+    try:
+        rb = names[browser](url)
+    except KeyError as e:
+        stderr.write('repository browser "%s" not supported\n' % browser)
         exit(1)
+
+    try:
+        # determine *ish type and expand
+        res = expand_args(ish, path)
+
+        link = get_link(res, rb, ish, raw)
+    except Exception as e:
+        stderr.write(str(e) + '\n') ; exit(1)
 
     if link and clipboard:
         try:

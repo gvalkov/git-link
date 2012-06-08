@@ -155,8 +155,9 @@ def _path(arg, tree_sha='HEAD^{tree}'):
             return sha, 'blob', tree_sha
 
 
-def path(arg, top_tree_sha='HEAD^{tree}'):
+def path(arg, commitish='HEAD'):
     res = {}
+    top_tree_sha = '%s^{tree}' % commitish
 
     r, topdir = run('git rev-parse --show-toplevel')
     path = relpath(arg, topdir)
@@ -171,9 +172,9 @@ def path(arg, top_tree_sha='HEAD^{tree}'):
 
     res['path'] = path
     res['sha']  = sha # tree or blob sha
-    res['tree_sha'] = tree_sha # tree sha if blob, None otherwise
+    res['tree_sha'] = revparse(tree_sha) # tree sha if blob, None otherwise
     res['top_tree_sha'] = revparse(top_tree_sha)
-    res['commit_sha'] = cat_commit('HEAD')['sha']
+    res['commit_sha'] = revparse(commitish)
 
     return res # :bug:
 
