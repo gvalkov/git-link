@@ -73,8 +73,8 @@ def cat_commit(commitish):
 
     r, out = run('git cat-file commit %s' % commitish)
     out = out.splitlines()[:4]
-    res = dict([i.split(' ', 1) for i in out])
 
+    res = dict([i.split(' ', 1) for i in out if i])
     res['sha'] = revparse(commitish) #:todo: why am I doing this!?
 
     return res
@@ -91,7 +91,7 @@ def cat_tag(tag):
 
     r, out = run('git cat-file tag %s' % tag)
     out = out.splitlines()[:4]
-    res = dict([i.split(' ', 1) for i in out])
+    res = dict([i.split(' ', 1) for i in out if i])
 
     res['sha'] = revparse(tag)
 
