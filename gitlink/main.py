@@ -35,11 +35,12 @@ Configuration:
   git config --add link.clipboard false|true
 
 Examples:
-  git link HEAD~10       -> url to 10th commit before HEAD
-  git link v0.1.0^{tree} -> url to tree object at tag v0.1.0
-  git link master:file   -> url to file in branch master
-  git link path/file     -> url to path/file in current branch
-  git link v0.1.0        -> url to tag v0.1.0
+  git link HEAD~10        -> url to 10th commit before HEAD
+  git link v0.1.0^{tree}  -> url to tree object at tag v0.1.0
+  git link master:file    -> url to file in branch master
+  git link path/file      -> url to path/file in current branch
+  git link devel -- path  -> url to path in branch devel
+  git link v0.1.0         -> url to tag v0.1.0
 ''' % ' '.join(names.keys())
 
 

@@ -62,6 +62,10 @@ EXAMPLES
 
     url to path/file in current branch
 
+**git link** devel -- path/file
+
+    url to path/fiel in branch devel
+
 **git link** --clipboard v0.1.0 
 
     url to tag v0.1.0, copied to clipboard
