@@ -134,10 +134,7 @@ def expand_args(ish, path):
     elif t == 'commit': res = git.commit(ish)
     elif t == 'tree':   res = git.tree(ish)
     elif t == 'blob':   res = git.blob(ish)
-
-    elif t == 'tag':
-        res = { 'type' : LT.tag, 'sha' : None }
-
+    elif t == 'tag':    res = git.tag(ish)
     else:
         res = git.path(ish, 'HEAD')
 
@@ -157,7 +154,7 @@ def get_link(r, rb, ish, raw=False):
         link = rb.tree(r['sha'])
 
     elif t == LT.tag:
-        link = rb.tag(ish)
+        link = rb.tag(r['tag'], r['sha'], r['object'])
 
     elif t == LT.branch:
         link = rb.branch(r['ref'], r['shortref'])

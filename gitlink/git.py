@@ -75,7 +75,25 @@ def cat_commit(commitish):
     out = out.splitlines()[:4]
     res = dict([i.split(' ', 1) for i in out])
 
-    res['sha'] = revparse(commitish)
+    res['sha'] = revparse(commitish) #:todo: why am I doing this!?
+
+    return res
+
+
+def cat_tag(tag):
+    ''' tag name or sha => {
+          'object' : sha of object pointed by tag,
+          'type'   : type of object pointed by tag,
+          'tag'    : name of tag (if tag was a sha),
+          'sha'    : revparsed sha of tag,
+          'tagger' : ...}
+    '''
+
+    r, out = run('git cat-file tag %s' % tag)
+    out = out.splitlines()[:4]
+    res = dict([i.split(' ', 1) for i in out])
+
+    res['sha'] = revparse(tag)
 
     return res
 
@@ -87,6 +105,14 @@ def commit(arg):
     return { 'type' : LT.commit,
              'sha'  : res['sha'],
              'tree_sha' : res['tree'] }
+
+
+def tag(arg):
+    ''' tag name or sha -> cat_tag() '''
+    res = cat_tag(arg)
+    res['type'] = LT.tag
+
+    return res
 
 
 def tree(arg):
@@ -106,7 +132,13 @@ def blob(arg):
         'path'       : None, }
 
     if ':' in arg:
+        # the commitish may also be a tag
         commitish, path = arg.split(':', 1)
+
+        r, t = run('git cat-file -t %s' % commitish)
+        if t == 'tag':
+            commitish = cat_tag(commitish)['object']
+
         commitd = cat_commit(commitish)
 
         sha, t, tree_sha = _path(path.split('/'), commitd['tree'])
@@ -114,9 +146,9 @@ def blob(arg):
         r, topdir = run('git rev-parse --show-toplevel')
 
         res['path']       = relpath(path, topdir)
-        res['commit_sha'] = commitd['sha']
         res['tree_sha']   = tree_sha
         res['sha']        = sha
+        res['commit_sha'] = commitd['sha']
     else:
         res['sha'] = arg
 
@@ -157,6 +189,7 @@ def _path(arg, tree_sha='HEAD^{tree}'):
 
 def path(arg, commitish='HEAD'):
     res = {}
+
     top_tree_sha = '%s^{tree}' % commitish
 
     r, topdir = run('git rev-parse --show-toplevel')
@@ -170,11 +203,15 @@ def path(arg, commitish='HEAD'):
     if type == 'blob'   : res['type'] = LT.blob
     elif type == 'tree' : res['type'] = LT.path
 
+    r, t = run('git cat-file -t %s' % commitish)
+    if t == 'tag':
+        commitish = cat_tag(commitish)['object']
+    res['commit_sha'] = revparse(commitish)
+
     res['path'] = path
     res['sha']  = sha # tree or blob sha
     res['tree_sha'] = revparse(tree_sha) # tree sha if blob, None otherwise
     res['top_tree_sha'] = revparse(top_tree_sha)
-    res['commit_sha'] = revparse(commitish)
 
     return res # :bug:
 

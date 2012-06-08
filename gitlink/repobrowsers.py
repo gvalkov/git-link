@@ -8,7 +8,7 @@ class RepoBrowser(object):
     ''' I represent a repository browser and my methods return links to the
         various git objects that I am capable of showing '''
 
-    def tag(self, name):
+    def tag(self, name, tag_sha=None, obj_sha=None):
         ''' Get url for tag name '''
         raise NotImplementedError
 
@@ -94,7 +94,7 @@ class GitwebBrowser(RepoBrowser):
         l = (self.url, 'a=%s' % self.head_view, 'h=%s' % shortref)
         return ';'.join(l)
 
-    def tag(self, name):
+    def tag(self, name, tag_sha=None, obj_sha=None):
         l = (self.url, 'a=%s' % self.tag_view, 'h=%s' % name)
         return ';'.join(l)
 
@@ -134,10 +134,11 @@ class GithubBrowser(RepoBrowser):
     def branch(self, ref, shortref):
         return self.join('tree', shortref)
 
-    def tag(self, name):
+    def tag(self, name, tag_sha=None, obj_sha=None):
         return self.join('tree', name)
 
     def blob(self, sha, path, tree=None, commit=None, raw=False):
+        # github does not seem to allow linking directly to a blob
         url = self.join('tree', commit, path) # @bug
 
         if raw:
@@ -171,7 +172,7 @@ class CgitBrowser(RepoBrowser):
         if not shortref: return None
         return self.join('log', '?h=%s' % shortref)
 
-    def tag(self, name):
+    def tag(self, name, tag_sha=None, obj_sha=None):
         return self.join('tag', '?id=%s' % name)
 
     def blob(self, sha, path, tree=None, commit=None, raw=False):
