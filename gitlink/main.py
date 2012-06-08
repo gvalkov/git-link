@@ -54,6 +54,7 @@ def parseopt(args=None):
         o('-r', '--raw',       action='store_true'),
         o('-u', '--url',       action='store'     ),
         o('-b', '--browser',   action='store', choices=names.keys()),
+        o('-t', '--traceback', action='store_true')
     )
 
     kw = {
@@ -111,7 +112,7 @@ def readopts():
         stderr.write(''.join(errors))
         exit(1)
 
-    return url, browser, clipboard, args, opts.raw
+    return url, browser, clipboard, args, opts.raw, opts
 
 
 def expand_args(ish, path):
@@ -172,7 +173,7 @@ def get_link(r, rb, ish, raw=False):
 
 
 def main(out=stdout):
-    url, browser, clipboard, args, raw = readopts()
+    url, browser, clipboard, args, raw, opts = readopts()
 
     if len(args) == 2: ish, path = args
     else: ish, path = args[0], None
@@ -184,18 +185,19 @@ def main(out=stdout):
         stderr.write('repository browser "%s" not supported\n' % browser)
         exit(1)
 
+    # determine *ish type and expand
     try:
-        # determine *ish type and expand
         res = expand_args(ish, path)
-
         link = get_link(res, rb, ish, raw)
     except Exception as e:
+        if opts.traceback: raise
         stderr.write(str(e) + '\n') ; exit(1)
 
     if link and clipboard:
         try:
             to_clipboard(link)
         except Exception as e:
+            if opts.traceback: raise
             stderr.write(str(e)+'\n')
 
     if link:
