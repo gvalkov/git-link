@@ -8,7 +8,7 @@ get a repo browser link to a git object
 
 :Author:    Georgi Valkov
 :Copyright: New BSD License
-:Version:   0.1.0
+:Version:   0.2.0
 :Manual section: 1
 
 SYNOPSIS
@@ -105,11 +105,6 @@ NOTES
 The base repo browser url for gitweb must include the project name:
 
     **git config** --add  http://git.kernel.org/?p=git/git.git
-
-It is not currently possible to specify the branch/tree that a path url should
-refer to:
-
-    **git link** master -- path/to/dir
 
 
 SEE ALSO

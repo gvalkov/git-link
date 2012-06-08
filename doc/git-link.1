@@ -1,6 +1,6 @@
 .\" Man page generated from reStructeredText.
 .
-.TH GIT-LINK 1 "" "0.1.0" ""
+.TH GIT-LINK 1 "" "0.2.0" ""
 .SH NAME
 git-link \- get a repo browser link to a git object
 .
@@ -89,6 +89,13 @@ url to path/file in current branch
 .UNINDENT
 .UNINDENT
 .sp
+\fBgit link\fP devel \-\- path/file
+.INDENT 0.0
+.INDENT 3.5
+url to path/fiel in branch devel
+.UNINDENT
+.UNINDENT
+.sp
 \fBgit link\fP \-\-clipboard v0.1.0
 .INDENT 0.0
 .INDENT 3.5
@@ -144,14 +151,6 @@ The base repo browser url for gitweb must include the project name:
 .INDENT 0.0
 .INDENT 3.5
 \fBgit config\fP \-\-add  \fI\%http://git.kernel.org/?p=git/git.git\fP
-.UNINDENT
-.UNINDENT
-.sp
-It is not currently possible to specify the branch/tree that a path url should
-refer to:
-.INDENT 0.0
-.INDENT 3.5
-\fBgit link\fP master \-\- path/to/dir
 .UNINDENT
 .UNINDENT
 .SH SEE ALSO
