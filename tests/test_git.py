@@ -73,24 +73,34 @@ def test_branch(repo):
     assert branch('origin/master')['shortref'] == 'master'
 
 
+def test_tag(repo):
+    assert cat_tag('v0.1.0') == {
+        'sha': '29faca327f595c01f795f9a2e9c27dca8aabcaee',
+        'tagger': 'Georgi Valkov <georgi.t.valkov@gmail.com> 1329252311 +0200',
+        'object': 'f54a0b6ad8518babf440db870dc778acc84877a8',
+        'type': 'commit',
+        'tag': 'v0.1.0'
+        }
+
+
 def test_path(repo):
     assert path('gitlink/main.py', 'v0.1.0') == {
         'tree_sha': 'b8ff9fc80e42bec20cfb1638f4efa0215fe4987a',
-        'commit_sha': '29faca327f595c01f795f9a2e9c27dca8aabcaee',
+        'commit_sha': 'f54a0b6ad8518babf440db870dc778acc84877a8',
         'top_tree_sha': '80f10ec249b6916adcf6c95f575a0125b8541c05',
         'sha': 'd930815a23f0cf53a471e2993bc42401926793fa',
         'path': 'gitlink/main.py',
         'type': LT.blob,
-    }
+        }
 
     assert path('tests', 'v0.1.0') == {
         'tree_sha': 'None',
-        'commit_sha': '29faca327f595c01f795f9a2e9c27dca8aabcaee',
+        'commit_sha': 'f54a0b6ad8518babf440db870dc778acc84877a8',
         'top_tree_sha': '80f10ec249b6916adcf6c95f575a0125b8541c05',
         'sha': '1a5bf01fcd47ff9936aac0344c587b616f081dfd',
         'path': 'tests',
         'type': LT.path,
-    }
+        }
 
     assert path('non-existant') == {}
 
