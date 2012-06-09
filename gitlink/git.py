@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from sys import getdefaultencoding
 from subprocess import Popen, PIPE
 from os.path import relpath
 
 from gitlink.repobrowsers import LinkType as LT
 
+_run_encoding = getdefaultencoding()
 
 def run(*args, **kw):
     p = Popen(stdout=PIPE, stderr=PIPE, shell=True, *args, **kw)
@@ -18,6 +20,7 @@ def run(*args, **kw):
         #raise sub.CalledProcessError(ret, cmd, output=err)
 
     if out:
+        out = out.decode(_run_encoding)  # :todo: not really sure about this
         out = out.rstrip('\n')
 
     return ret, out

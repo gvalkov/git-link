@@ -53,7 +53,7 @@ def parseopt(args=None):
         o('-c', '--clipboard', action='store_true'),
         o('-r', '--raw',       action='store_true'),
         o('-u', '--url',       action='store'     ),
-        o('-b', '--browser',   action='store', choices=names.keys()),
+        o('-b', '--browser',   action='store', choices=list(names.keys())),
         o('-t', '--traceback', action='store_true')
     )
 

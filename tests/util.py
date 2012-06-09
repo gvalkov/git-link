@@ -6,9 +6,13 @@ import os, sys
 from shutil import rmtree
 from tempfile import mkdtemp
 from functools import partial
-from subprocess import call, check_call, check_output
+from subprocess import call, check_call
 from os.path import dirname, abspath, join as pjoin, isdir
-from cStringIO import StringIO
+
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from pytest import raises, set_trace, mark
 from gitlink.main import main

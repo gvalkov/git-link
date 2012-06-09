@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from sys import stdout
 from os import getuid
 from setuptools import setup
 from os.path import dirname, isdir, join as pjoin
@@ -14,13 +15,17 @@ classifiers = (
     'Environment :: Console',
     'Topic :: Utilities',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 2.5',
+    'Programming Language :: Python :: 2.6',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3.0',
+    'Programming Language :: Python :: 3.1',
+    'Programming Language :: Python :: 3.2',
     'License :: OSI Approved :: BSD License',
     #'Development Status :: 1 - Planning',
     #'Development Status :: 2 - Pre-Alpha',
     #'Development Status :: 3 - Alpha',
-    'Development Status :: 4 - Beta',
-    #'Development Status :: 5 - Production/Stable',
+    #'Development Status :: 4 - Beta',
+    'Development Status :: 5 - Production/Stable',
     #'Development Status :: 6 - Mature',
     #'Development Status :: 7 - Inactive',
 )
@@ -73,10 +78,10 @@ class BuildDoc(Command):
     def run(self):
         from subprocess import check_call as c
 
-        print 'updating version: %s' % version()
+        stdout.write('updating version: %s\n' % version())
         c('sed -i -e "s,\(:Version: *\).*,\\1%s," %s' % (version(), self.source), shell=True)
 
-        print 'generating man page: %s' % self.dest
+        stdout.write('generating man page: %s' % self.dest)
         c('rst2man %s > %s' % (self.source, self.dest), shell=True)
 
 
