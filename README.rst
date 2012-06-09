@@ -90,7 +90,8 @@ Development
 
 See repobrowsers.py_ and test_cgit.py_ if you are interested in adding a new
 repository browser.  Running ``python setup.py test`` or ``py.test tests/``
-before committing is generally a good idea.
+before committing is generally a good idea. You might also want to run tox_ to
+make sure that tests pass on all supported python versions (>=2.6).
 
 Please make do without bringing in any external dependencies. As nice as
 GitPython and libgit2 are, anything that this tool needs from git can be
@@ -113,4 +114,4 @@ Git link is released under the terms of the `New BSD License`_.
 .. _`NEW BSD License`: https://raw.github.com/gvalkov/git-link/master/LICENSE
 .. _git-link.zsh:      https://github.com/gvalkov/git-link/blob/master/etc/_git-link
 .. _git-link.sh:       https://github.com/gvalkov/git-link/blob/master/etc/git-link.sh
-
+.. _tox: http://tox.testrun.org/latest/

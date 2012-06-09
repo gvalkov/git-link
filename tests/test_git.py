@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 
-from tests.util import *
+from util import *
 from gitlink.git import *
 
 

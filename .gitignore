@@ -8,8 +8,11 @@ build/
 dropin.cache
 pip-log.txt
 .installed.cfg
+*#
+.#*
 .coverage
 .ropeproject
+.tox
 tags
 tests/test-output
 tests/test-repos

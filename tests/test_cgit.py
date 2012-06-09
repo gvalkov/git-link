@@ -3,7 +3,7 @@
 
 ''' cgit tests '''
 
-from tests.util import *
+from util import *
 
 
 res = [
