@@ -4,7 +4,7 @@ Git Link
 Git link is a git sub-command for getting a repo-browser link to a git object.
 The motivation behind git-link is that it is often faster to navigate to a git
 object or path on the command line than it is to click your way to it through a
-web interface.  
+web interface.
 
 Git link can build urls for the following repo-browser:
 cgit_, gitweb_, github_, github-private_
@@ -24,6 +24,7 @@ Usage
       -c, --clipboard       copy link to clipboard (overwrites link.clipboard)
       -u, --url <url>       repo browser base url (overwrites link.url)
       -b, --browser <type>  repo browser type (overwrites link.browser)
+      -s, --short <num>     truncate hashes to length (overwrites link.short)
       -r, --raw             show raw blob if possible
 
     Available repo browsers:
@@ -52,7 +53,7 @@ development version can be installed from github::
     $ pip install gitlink  # latest stable version
     $ pip install git+git://github.com/gvalkov/git-link.git # latest development version
 
-Alternatively, you can install it manually like any other python package:: 
+Alternatively, you can install it manually like any other python package::
 
     $ git clone git@github.com:gvalkov/git-link.git
     $ cd git-link
@@ -69,7 +70,8 @@ or on the command line::
 
     $ git config --add link.url <repo browser url>
     $ git config --add link.browser <repo browser name>
-    $ git config --add link.clipboard false|true # optional
+    $ git config --add link.clipboard false|true  # optional
+    $ git config --add link.short 7  # optional
     $ git link   --browser <url> --name <name> --clipboard ...
 
 
@@ -91,7 +93,7 @@ Development
 See repobrowsers.py_ and test_cgit.py_ if you are interested in adding a new
 repository browser.  Running ``python setup.py test`` or ``py.test tests/``
 before committing is generally a good idea. You might also want to run tox_ to
-make sure that tests pass on all supported python versions (>=2.6).
+make sure that tests pass on all supported versions of Python (>=2.6).
 
 Please make do without bringing in any external dependencies. As nice as
 GitPython and libgit2 are, anything that this tool needs from git can be
@@ -110,7 +112,7 @@ Git link is released under the terms of the `New BSD License`_.
 .. _repo.or.cz: http://repo.or.cz/
 .. _github-private:    https://github.com/plans
 .. _repobrowsers.py:   https://github.com/gvalkov/git-link/blob/master/gitlink/repobrowsers.py
-.. _test_cgit.py:      https://github.com/gvalkov/git-link/blob/master/tests/test_cgit.py  
+.. _test_cgit.py:      https://github.com/gvalkov/git-link/blob/master/tests/test_cgit.py
 .. _`NEW BSD License`: https://raw.github.com/gvalkov/git-link/master/LICENSE
 .. _git-link.zsh:      https://github.com/gvalkov/git-link/blob/master/etc/_git-link
 .. _git-link.sh:       https://github.com/gvalkov/git-link/blob/master/etc/git-link.sh

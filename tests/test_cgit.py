@@ -46,6 +46,10 @@ res = [
     # raw blob with commit
     ('-r 7640d90:COPYING',
      'http://hjemli.net/git/cgit/plain/COPYING/?tree=a0ec3e5222dbb0cff965487def39f5781e5cb231'),
+
+    # raw blob with commit (short)
+    ('-s 7 -r 7640d90:COPYING',
+     'http://hjemli.net/git/cgit/plain/COPYING/?tree=a0ec3e5'),
 ]
 
 

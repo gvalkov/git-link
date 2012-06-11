@@ -6,9 +6,9 @@ git-link
 get a repo browser link to a git object
 ---------------------------------------
 
-:Author:    Georgi Valkov
+:Author:    Georgi Valkov - https://github.com/gvalkov/git-link
 :Copyright: New BSD License
-:Version:   0.2.0
+:Version:   0.2.1
 :Manual section: 1
 
 SYNOPSIS
@@ -40,13 +40,16 @@ git-config(1) or on the command line::
     git config --add link.url <repo browser url>
     git config --add link.browser <repo browser name>
     git config --add link.clipboard false|true
-    git link   --browser <url> --name <name> --clipboard ...
+    git config --add link.short 7
+    git link   --url <url> --browser <name> --clipboard ...
+
+Only ``link.url|--url`` and ``link.browser|--browser`` need to be set.
 
 
 EXAMPLES
 ========
 
-**git link** HEAD~10       
+**git link** HEAD~10
 
     url to 10th commit before HEAD
 
@@ -66,9 +69,14 @@ EXAMPLES
 
     url to path/fiel in branch devel
 
-**git link** --clipboard v0.1.0 
+**git link** --clipboard v0.1.0
 
     url to tag v0.1.0, copied to clipboard
+
+**git link** --short 10 HEAD~10
+
+    url to 10th commit before HEAD with hashes truncated to 10
+    characters
 
 
 OPTIONS
@@ -93,6 +101,10 @@ OPTIONS
 -b,--browser <name>
 
     repo browser type (overwrites git config link.browser)
+
+-s,--short <number>
+
+    truncate hashes to <number> characters
 
 -r,--raw
 

@@ -46,6 +46,10 @@ res = [
     # branch/tag -- file
     ('v0.1.0 -- tests',
      'https://github.com/gvalkov/rsstail.py/tree/8c30df6a69052e02b67201d77ba2513ec832b530/tests'),
+
+    # branch/tag -- file (short)
+    ('-s 7 v0.1.0 -- tests',
+     'https://github.com/gvalkov/rsstail.py/tree/8c30df6/tests'),
 ]
 
 

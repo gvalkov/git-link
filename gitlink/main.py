@@ -24,6 +24,7 @@ Options:
   -c, --clipboard       copy link to clipboard (overwrites link.clipboard)
   -u, --url <url>       repo browser url (overwrites link.url)
   -b, --browser <type>  repo browser type (overwrites link.browser)
+  -s, --short <num>     truncate hashes to length (overwrites link.short)
   -r, --raw             show raw blob if possible
 
 Available repo browsers:
@@ -54,7 +55,8 @@ def parseopt(args=None):
         o('-r', '--raw',       action='store_true'),
         o('-u', '--url',       action='store'     ),
         o('-b', '--browser',   action='store', choices=list(names.keys())),
-        o('-t', '--traceback', action='store_true')
+        o('-s', '--short',     action='store', type='int'),
+        o('-t', '--traceback', action='store_true'),
     )
 
     kw = {
@@ -101,6 +103,7 @@ def readopts():
     url = opts.url or cfg.get('url', None)
     browser = opts.browser or cfg.get('browser', None)
     clipboard = opts.clipboard or cfg.get('clipboard', None)
+    short = opts.short or cfg.get('short', None)
 
     errors = []
     if not url:
@@ -108,11 +111,17 @@ def readopts():
     if not browser:
         errors.append('repo browser type not set via "link.browser" or "-b, --browser"\n')
 
+    if short:
+      try:
+          short = int(short)
+      except ValueError:
+          errors.append('invalid integer value for option "link.short": %s' % short)
+
     if errors:
         stderr.write(''.join(errors))
         exit(1)
 
-    return url, browser, clipboard, args, opts.raw, opts
+    return url, browser, clipboard, short, args, opts.raw, opts
 
 
 def expand_args(ish, path):
@@ -172,8 +181,14 @@ def get_link(r, rb, ish, raw=False):
     return link
 
 
+def shorten_hashes(res, length=7):
+    for key in 'sha', 'tree_sha', 'object', 'commit_sha', 'top_tree_sha':
+        if key in res and isinstance(res[key], basestring):
+            res[key] = res[key][:length]
+
+
 def main(out=stdout):
-    url, browser, clipboard, args, raw, opts = readopts()
+    url, browser, clipboard, short, args, raw, opts = readopts()
 
     if len(args) == 2: ish, path = args
     else: ish, path = args[0], None
@@ -188,6 +203,7 @@ def main(out=stdout):
     # determine *ish type and expand
     try:
         res = expand_args(ish, path)
+        if short: shorten_hashes(res, short)
         link = get_link(res, rb, ish, raw)
     except Exception as e:
         if opts.traceback: raise

@@ -46,6 +46,10 @@ res = [
     # raw blob with commit
     ('-r 47bf539:COPYRIGHT',
      'http://git.naquadah.org/?p=oocairo.git;a=blob_plain;h=f90b1e3f8284f6a94f36919219acc575d9362e10;f=COPYRIGHT'),
+
+    # raw blob with commit (short)
+    ('-s 7 -r 47bf539:COPYRIGHT',
+     'http://git.naquadah.org/?p=oocairo.git;a=blob_plain;h=f90b1e3;f=COPYRIGHT'),
 ]
 
 
