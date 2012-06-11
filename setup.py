@@ -34,7 +34,7 @@ kw = {
     'name'                 : 'gitlink',
     'version'              : version(),
 
-    'description'          : 'Git subcommand for getting a repo browser link to a git object',
+    'description'          : 'Git sub-command for getting a repo browser link to a git object',
     'long_description'     : open(pjoin(here, 'README.rst')).read(),
 
     'author'               : 'Georgi Valkov',

@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 '''
-Git subcommand for getting a repo browser link to a git object.
+Git sub-command for getting a repo browser link to a git object.
 '''
 
 import optparse
