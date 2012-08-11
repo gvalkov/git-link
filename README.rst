@@ -48,12 +48,16 @@ Installing
 ----------
 
 The latest stable version of git link is available on pypi, while the
-development version can be installed from github::
+development version can be installed from github:
+
+.. code-block:: bash
 
     $ pip install gitlink  # latest stable version
     $ pip install git+git://github.com/gvalkov/git-link.git # latest development version
 
-Alternatively, you can install it manually like any other python package::
+Alternatively, you can install it manually like any other python package:
+
+.. code-block:: bash
 
     $ git clone git@github.com:gvalkov/git-link.git
     $ cd git-link
@@ -66,7 +70,9 @@ Setup
 
 Git link needs to know the name and url of the repository browser for every
 repository it is being run in. They can be specified either through git-config
-or on the command line::
+or on the command line:
+
+.. code-block:: bash
 
     $ git config --add link.url <repo browser url>
     $ git config --add link.browser <repo browser name>
