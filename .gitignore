@@ -16,3 +16,4 @@ pip-log.txt
 tags
 tests/test-output
 tests/test-repos
+__pycache__/
