@@ -4,7 +4,7 @@
 '''Version information constants and auxiliary functions.'''
 
 
-VERSION = (0, 2, 1)
+VERSION = (0, 3, 0)
 
 def version():
     return '.'.join([str(i) for i in VERSION])
