@@ -7,11 +7,14 @@ Git sub-command for getting a repo browser link to a git object.
 
 import optparse
 
-from sys import argv, exit, stderr, stdout
+from sys import argv, exit, stderr, stdout, version_info
 
 from gitlink.repobrowsers import names, LinkType as LT
 from gitlink.version import version_verbose
 from gitlink import git
+
+
+basestr = (str, unicode) if version_info[0] == 2 else (str,)
 
 
 # Configuring an optparse formatter is too verbose. This will do:
@@ -181,7 +184,7 @@ def get_link(r, rb, ish, raw=False):
 
 def shorten_hashes(res, length=7):
     for key in 'sha', 'tree_sha', 'object', 'commit_sha', 'top_tree_sha':
-        if key in res and isinstance(res[key], str):
+        if key in res and isinstance(res[key], basestr):
             res[key] = res[key][:length]
 
 
