@@ -3,66 +3,50 @@
 
 from sys import stdout
 from os import getuid
-from setuptools import setup
 from os.path import dirname, isdir, join as pjoin
+
+from distutils.command.build import build
+from distutils.core import Command
+from setuptools import setup
+
 from gitlink.version import version
 
-here = dirname(__file__)
 
-tests_require = ('pytest',)
+here = dirname(__file__)
 
 classifiers = (
     'Environment :: Console',
     'Topic :: Utilities',
     'Operating System :: OS Independent',
-    'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
     'Programming Language :: Python :: 3.0',
     'Programming Language :: Python :: 3.1',
     'Programming Language :: Python :: 3.2',
     'License :: OSI Approved :: BSD License',
-    #'Development Status :: 1 - Planning',
-    #'Development Status :: 2 - Pre-Alpha',
-    #'Development Status :: 3 - Alpha',
-    #'Development Status :: 4 - Beta',
     'Development Status :: 5 - Production/Stable',
     #'Development Status :: 6 - Mature',
     #'Development Status :: 7 - Inactive',
 )
 
 kw = {
-    'name'                 : 'gitlink',
-    'version'              : version(),
-
-    'description'          : 'Git sub-command for getting a repo browser link to a git object',
-    'long_description'     : open(pjoin(here, 'README.rst')).read(),
-
-    'author'               : 'Georgi Valkov',
-    'author_email'         : 'georgi.t.valkov@gmail.com',
-
-    'license'              : 'New BSD License',
-
-    'keywords'             : 'git gitweb github cgit subcommand',
-    'classifiers'          : classifiers,
-
-    'url'                  : 'https://github.com/gvalkov/git-link',
-
-    'packages'             : ('gitlink',),
-    'entry_points'         : {
-        'console_scripts'  : ['git-link = gitlink.main:main']
-    },
-
-    'data_files'           : [('share/man/man1', ['doc/git-link.1'])],
-
-    'tests_require'        : tests_require,
-    'cmdclass'             : {},
-
-    'zip_safe'             : False,
+    'name'             : 'gitlink',
+    'version'          : version(),
+    'description'      : 'Git sub-command for getting a repo browser link to a git object',
+    'long_description' : open(pjoin(here, 'README.rst')).read(),
+    'url'              : 'https://github.com/gvalkov/git-link',
+    'author'           : 'Georgi Valkov',
+    'author_email'     : 'georgi.t.valkov@gmail.com',
+    'license'          : 'Revised BSD License',
+    'keywords'         : 'git gitweb github cgit subcommand',
+    'classifiers'      : classifiers,
+    'packages'         : ['gitlink'],
+    'entry_points'     : {'console_scripts': ['git-link = gitlink.main:main']},
+    'data_files'       : [('share/man/man1', ['doc/git-link.1'])],
+    'tests_require'    : ['pytest'],
+    'cmdclass'         : {},
+    'zip_safe'         : False,
 }
 
-
-from distutils.command.build import build
-from distutils.core import Command
 
 class BuildDoc(Command):
     description = 'Generate man page'
@@ -109,5 +93,5 @@ if getuid() == 0:
         t = ('/usr/share/zsh/functions/Completion/Unix/', ['etc/_git-link'])
         kw['data_files'].append(t)
 
-
-setup(**kw)
+if __name__ == '__main__':
+    setup(**kw)
