@@ -1,4 +1,5 @@
 include README.rst
+include LICENSE
 include doc/*.rst
 include doc/*.1
 include etc/git-link.sh
