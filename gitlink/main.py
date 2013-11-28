@@ -183,7 +183,7 @@ def get_link(r, rb, ish, raw=False):
 
 def shorten_hashes(res, length=7):
     for key in 'sha', 'tree_sha', 'object', 'commit_sha', 'top_tree_sha':
-        if key in res and isinstance(res[key], basestring):
+        if key in res and isinstance(res[key], str):
             res[key] = res[key][:length]
 
 
