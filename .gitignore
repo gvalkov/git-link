@@ -17,3 +17,4 @@ tags
 tests/test-output
 tests/test-repos
 __pycache__/
+doc/_build/
