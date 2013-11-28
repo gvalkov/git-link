@@ -7,8 +7,8 @@ get a repo browser link to a git object
 ---------------------------------------
 
 :Author:    Georgi Valkov - https://github.com/gvalkov/git-link
-:Copyright: New BSD License
-:Version:   0.2.1
+:Copyright: Revised BSD License
+:Version:   0.3.0
 :Manual section: 1
 
 SYNOPSIS
