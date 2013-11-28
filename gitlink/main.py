@@ -79,8 +79,7 @@ def to_clipboard(s):
     try:
         from gitlink.pyperclip import copy
     except:
-        raise Exception('warning: xclip must be installed for clipboard to work')
-
+        raise Exception('warning: xclip or xsel must be installed for copying to work')
     copy(s)
 
 
