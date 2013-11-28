@@ -88,10 +88,15 @@ if getuid() == 0:
         t = ('/etc/bash_completion.d/', ['etc/git-link.sh'])
         kw['data_files'].append(t)
 
-    # this is only valid for most debians
-    if isdir('/usr/share/zsh/functions/Completion/Unix/'):
-        t = ('/usr/share/zsh/functions/Completion/Unix/', ['etc/_git-link'])
-        kw['data_files'].append(t)
+    # this is only valid for fedora and most debians
+    dirs = ['/usr/share/zsh/functions/Completion/Unix/',
+            '/usr/share/zsh/site-functions']
+
+    for dir in dirs:
+        if isdir(dir):
+            t = (dir, ['etc/_git-link'])
+            kw['data_files'].append(t)
+            continue
 
 if __name__ == '__main__':
     setup(**kw)
