@@ -10,7 +10,7 @@ import optparse
 from sys import argv, exit, stderr, stdout, version_info
 
 from gitlink.repobrowsers import names, LinkType as LT
-from gitlink.version import version_verbose
+from gitlink.version import version
 from gitlink import git
 
 
@@ -92,7 +92,8 @@ def readopts():
     parser, opts, args = parseopt()
 
     if opts.version:
-        stderr.write(version_verbose() + '\n')
+        vstr = 'git-link version %s \n' % version()
+        stderr.write(vstr)
         exit(0)
 
     if len(argv) == 1 or opts.help or not args:
