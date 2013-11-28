@@ -53,16 +53,16 @@ def parseopt(args=None):
         o('-v', '--version',   action='store_true'),
         o('-c', '--clipboard', action='store_true'),
         o('-r', '--raw',       action='store_true'),
-        o('-u', '--url',       action='store'     ),
+        o('-u', '--url',       action='store'),
         o('-b', '--browser',   action='store', choices=list(names.keys())),
         o('-s', '--short',     action='store', type='int'),
         o('-t', '--traceback', action='store_true'),
     )
 
     kw = {
-        'usage'           : usage,
-        'option_list'     : opts,
-        'add_help_option' : False,
+        'usage': usage,
+        'option_list': opts,
+        'add_help_option': False,
     }
 
     p = optparse.OptionParser(**kw)
@@ -75,7 +75,7 @@ def parseopt(args=None):
 
 
 def to_clipboard(s):
-    ''' send string to clipboard '''
+    '''Send string to clipboard.'''
     try:
         from gitlink.pyperclip import copy
     except:
@@ -85,7 +85,7 @@ def to_clipboard(s):
 
 
 def readopts():
-    ''' read configuration from command line or git config '''
+    '''Read configuration from command line or git config.'''
 
     parser, opts, args = parseopt()
 
@@ -112,10 +112,9 @@ def readopts():
         errors.append('repo browser type not set via "link.browser" or "-b, --browser"\n')
 
     if short:
-      try:
-          short = int(short)
-      except ValueError:
-          errors.append('invalid integer value for option "link.short": %s' % short)
+        try: short = int(short)
+        except ValueError:
+            errors.append('invalid integer value for option "link.short": %s' % short)
 
     if errors:
         stderr.write(''.join(errors))
@@ -125,7 +124,7 @@ def readopts():
 
 
 def expand_args(ish, path):
-    ''' determine *ish type and prepare response dict '''
+    '''Determine *ish type and prepare response dict.'''
 
     if ish and path:
         res = git.path(path, ish)
@@ -149,7 +148,7 @@ def expand_args(ish, path):
         res = git.path(ish, 'HEAD')
 
     if not res:
-        res = {'type' : LT.unknown}
+        res = {'type': LT.unknown}
 
     return res
 
@@ -206,8 +205,10 @@ def main(out=stdout):
         if short: shorten_hashes(res, short)
         link = get_link(res, rb, ish, raw)
     except Exception as e:
-        if opts.traceback: raise
-        stderr.write(str(e) + '\n') ; exit(1)
+        if opts.traceback:
+            raise
+        stderr.write(str(e) + '\n')
+        exit(1)
 
     if link and clipboard:
         try:
@@ -221,4 +222,4 @@ def main(out=stdout):
 
 
 if __name__ == '__main__':
-   main()
+    main()

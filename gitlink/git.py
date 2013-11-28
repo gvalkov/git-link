@@ -7,7 +7,9 @@ from os.path import relpath
 
 from gitlink.repobrowsers import LinkType as LT
 
+
 _run_encoding = getdefaultencoding()
+
 
 def run(*args, **kw):
     p = Popen(stdout=PIPE, stderr=PIPE, shell=True, *args, **kw)
@@ -16,7 +18,8 @@ def run(*args, **kw):
 
     if ret:
         cmd = kw.get('args')
-        if cmd is None: cmd = args[0]
+        if cmd is None:
+            cmd = args[0]
         #raise sub.CalledProcessError(ret, cmd, output=err)
 
     if out:
@@ -40,7 +43,8 @@ def get_config(section, strip_section=True):
 
     r, out = run('git config --get-regexp "%s\\..*"' % section)
 
-    if r: return {}
+    if r:
+        return {}
 
     def parse_helper(item):
         key, value = item
@@ -78,7 +82,7 @@ def cat_commit(commitish):
     out = out.splitlines()[:4]
 
     res = dict([i.split(' ', 1) for i in out if i])
-    res['sha'] = revparse(commitish) #:todo: why am I doing this!?
+    res['sha'] = revparse(commitish)  # :todo: why am I doing this!?
 
     return res
 
@@ -105,9 +109,9 @@ def commit(arg):
     ''' HEAD~10 -> actual commit sha and tree sha'''
     res = cat_commit(arg)
 
-    return { 'type' : LT.commit,
-             'sha'  : res['sha'],
-             'tree_sha' : res['tree'] }
+    return {'type': LT.commit,
+            'sha':  res['sha'],
+            'tree_sha': res['tree']}
 
 
 def tag(arg):
@@ -121,18 +125,18 @@ def tag(arg):
 def tree(arg):
     ''' HEAD~~^{tree} -> actual tree sha '''
 
-    return { 'type' : LT.tree,
-             'sha'  : revparse(arg) }
+    return {'type': LT.tree,
+            'sha':  revparse(arg)}
 
 
 def blob(arg):
     ''' HEAD~2:main.py -> tree + blob + path relative to git topdir '''
 
     res = {
-        'type'       : LT.blob,
-        'tree_sha'   : None,
-        'commit_sha' : None,
-        'path'       : None, }
+        'type':       LT.blob,
+        'tree_sha':   None,
+        'commit_sha': None,
+        'path':       None, }
 
     if ':' in arg:
         # the commitish may also be a tag
@@ -201,10 +205,10 @@ def path(arg, commitish='HEAD'):
     stt = _path(path.split('/'), top_tree_sha)
 
     if stt: sha, type, tree_sha = stt
-    else:   return {}
+    else: return {}
 
-    if type == 'blob'   : res['type'] = LT.blob
-    elif type == 'tree' : res['type'] = LT.path
+    if type == 'blob':   res['type'] = LT.blob
+    elif type == 'tree': res['type'] = LT.path
 
     r, t = run('git cat-file -t %s' % commitish)
     if t == 'tag':
@@ -212,11 +216,11 @@ def path(arg, commitish='HEAD'):
     res['commit_sha'] = revparse(commitish)
 
     res['path'] = path
-    res['sha']  = sha # tree or blob sha
-    res['tree_sha'] = revparse(tree_sha) # tree sha if blob, None otherwise
+    res['sha'] = sha  # tree or blob sha
+    res['tree_sha'] = revparse(tree_sha)  # tree sha if blob, None otherwise
     res['top_tree_sha'] = revparse(top_tree_sha)
 
-    return res # :bug:
+    return res  # :bug:
 
 
 def branch(arg):
@@ -234,10 +238,10 @@ def branch(arg):
             shortref = ref.replace('refs/remotes/%s/' % i, '')
             break
 
-    res = { 'type' : LT.branch,
-            'sha'  : sha,
-            'ref'  : ref,
-            'shortref' : shortref, }
+    res = {'type': LT.branch,
+           'sha':  sha,
+           'ref':  ref,
+           'shortref': shortref, }
 
     return res
 

@@ -5,39 +5,40 @@ from os.path import join as pjoin
 
 
 class RepoBrowser(object):
-    ''' I represent a repository browser and my methods return links to the
-        various git objects that I am capable of showing '''
+    '''I represent a repository browser and my methods return links to
+       the various git objects that I am capable of showing.'''
 
     def tag(self, name, tag_sha=None, obj_sha=None):
-        ''' Get url for tag name '''
+        '''Get url for tag name.'''
         raise NotImplementedError
 
     def commit(self, sha):
-        ''' Get url for commit object '''
+        '''Get url for commit object.'''
         raise NotImplementedError
 
     def branch(self, ref, shortref):
-        ''' Get url for branch name '''
+        '''Get url for branch name'''
         raise NotImplementedError
 
     def diff(self, diffspec):
-        ''' Get url for diff '''
+        '''Get url for diff.'''
         raise NotImplementedError
 
     def tree(self, sha):
-        ''' Get url for tree object '''
+        '''Get url for tree object.'''
         raise NotImplementedError
 
     def path(self, path, tree, commit):
-        ''' Get url for a path relative to the root of repository '''
+        '''Get url for a path relative to the root of repository.'''
         raise NotImplementedError
 
     def blob(self, sha, path, tree, commit, raw):
-        ''' Get url for a blob object '''
+        '''Get url for a blob object.'''
         raise NotImplementedError
 
     def join(self, *args):
-        l = [self.url] ; l.extend(args)
+        l = [self.url]
+        l.extend(args)
         return pjoin(*l)
 
 
@@ -53,20 +54,20 @@ class LinkType(object):
 
 
 class GitwebBrowser(RepoBrowser):
-    ''' gitweb - git's default web interface '''
+    '''Gitweb - git's default web interface.'''
 
     options = {
-        'head-view' : {
-            'help'    : 'default head view',
-            'choices' : ('shortlog', 'log', 'tree'),
+        'head-view': {
+            'help':    'default head view',
+            'choices': ('shortlog', 'log', 'tree'),
         },
-        'commit-view' : {
-            'help'    : 'default commit view',
-            'choices' : ('commit', 'commitdiff', 'tree'),
+        'commit-view': {
+            'help':    'default commit view',
+            'choices': ('commit', 'commitdiff', 'tree'),
         },
-        'tag-view' : {
-            'help'    : 'default tag view',
-            'choices' : ('commit', 'shortlog', 'log'),
+        'tag-view': {
+            'help':    'default tag view',
+            'choices': ('commit', 'shortlog', 'log'),
         },
     }
 
@@ -103,11 +104,10 @@ class GitwebBrowser(RepoBrowser):
             tree = None
 
         l = [self.url, 'a=blob', 'h=%s' % sha]
-
         if path:
             l.append('f=%s' % path)
 
-        url =  ';'.join(l)
+        url = ';'.join(l)
 
         if raw:
             url = url.replace('a=blob', 'a=blob_plain', 1)
@@ -120,7 +120,7 @@ class GitwebBrowser(RepoBrowser):
 
 
 class GithubBrowser(RepoBrowser):
-    ''' github public repositories '''
+    '''Github public repositories.'''
 
     def __init__(self, url):
         self.url = url
@@ -139,7 +139,7 @@ class GithubBrowser(RepoBrowser):
 
     def blob(self, sha, path, tree=None, commit=None, raw=False):
         # github does not seem to allow linking directly to a blob
-        url = self.join('tree', commit, path) # @bug
+        url = self.join('tree', commit, path)  # @bug
 
         if raw:
             url = url.replace('github.com', 'raw.github.com', 1)
@@ -152,12 +152,12 @@ class GithubBrowser(RepoBrowser):
 
 
 class GithubPrivateBrowser(GithubBrowser):
-    ''' github private repositories (I don't know how a private repo looks
-        like, but I assume it's the same) '''
+    '''Github private repositories (I don't know how a private repo looks
+       like, but I assume it's similar to a public one).'''
 
 
 class CgitBrowser(RepoBrowser):
-    ''' cgit - web interface for git repositories, written in c '''
+    '''Cgit - web interface for git repositories, written in c.'''
 
     def __init__(self, url):
         self.url = url
@@ -180,7 +180,6 @@ class CgitBrowser(RepoBrowser):
             tree = None
 
         url = self.path(path, tree)
-
         if raw:
             url = url.replace('tree', 'plain', 1)
 
@@ -195,9 +194,8 @@ class CgitBrowser(RepoBrowser):
 
 
 names = {
-    'cgit'           : CgitBrowser,
-    'gitweb'         : GitwebBrowser,
-    'github'         : GithubBrowser,
-    'github-private' : GithubPrivateBrowser,
+    'cgit':   CgitBrowser,
+    'gitweb': GitwebBrowser,
+    'github': GithubBrowser,
+    'github-private': GithubPrivateBrowser,
 }
-
