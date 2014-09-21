@@ -2,9 +2,9 @@
 git-link
 ========
 
----------------------------------------
-get a repo browser link to a git object
----------------------------------------
+-------------------------------------
+get repo browser links to git objects
+-------------------------------------
 
 :Author:    Georgi Valkov - https://github.com/gvalkov/git-link
 :Copyright: Revised BSD License
@@ -16,7 +16,7 @@ SYNOPSIS
 
 ::
 
-    git link [-hvcubr]  <commit>|<tree>|<path>|<tag>|<diff>
+    git link [-hvcubsr] <commit>|<tree>|<path>|<tag>|<diff>
     git link [-r|--raw] <blob>
     git link [-b|--browser|-u|--url] <commit>|<tree>|<path>|<tag>|<diff>|<blob>
 
@@ -24,10 +24,10 @@ SYNOPSIS
 DESCRIPTION
 ===========
 
-Git-link builds repository browser urls for git objects and paths in the
-working copy. The motivation behind git-link is that it is often faster to
-navigate to a git object or path on the command line than it is to click your
-way to it through a web interface.
+Git-link builds repository browser urls for objects and paths in the working
+copy. The motivation behind git-link is that it is often faster to navigate to
+a git object or path on the command line than it is to click your way to it
+through a web interface.
 
 
 SETUP

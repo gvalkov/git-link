@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from sys import stdout
-from os import getuid
-from os.path import isdir, join as pjoin
+from __future__ import print_function
 
-from distutils.command.build import build
-from distutils.core import Command
+from os import getuid
+from os.path import isdir
 from setuptools import setup
 
 from gitlink import version
+
 
 classifiers = [
     'Environment :: Console',
@@ -37,44 +36,8 @@ kw = {
     'entry_points':     {'console_scripts': ['git-link = gitlink.main:main']},
     'data_files':       [('share/man/man1', ['doc/git-link.1'])],
     'tests_require':    ['pytest'],
-    'cmdclass':         {},
     'zip_safe':         True,
 }
-
-
-class BuildDoc(Command):
-    description = 'Generate man page'
-
-    source = 'doc/git-link-man1.rst'
-    dest = 'doc/git-link.1'
-
-    user_options = []
-
-    def initialize_options(self): pass
-    def finalize_options(self): pass
-
-    def run(self):
-        from subprocess import check_call as c
-
-        stdout.write('updating version: %s\n' % version())
-        c('sed -i -e "s,\(:Version: *\).*,\\1%s," %s' % (version(), self.source), shell=True)
-
-        stdout.write('generating man page: %s' % self.dest)
-        c('rst2man %s > %s' % (self.source, self.dest), shell=True)
-
-
-class PyTest(Command):
-    user_options = []
-    def initialize_options(self): pass
-    def finalize_options(self):   pass
-    def run(self):
-        from subprocess import call
-        errno = call(('py.test', 'tests'))
-        raise SystemExit(errno)
-
-kw['cmdclass']['test'] = PyTest
-kw['cmdclass']['doc']  = BuildDoc
-
 
 # try to install bash and zsh completions (emphasis on the *try*)
 if getuid() == 0:
@@ -82,8 +45,9 @@ if getuid() == 0:
         t = ('/etc/bash_completion.d/', ['etc/git-link.sh'])
         kw['data_files'].append(t)
 
-    # this is only valid for fedora and most debians
+    # this is only valid for fedora, freebsd and most debians
     dirs = ['/usr/share/zsh/functions/Completion/Unix/',
+            '/usr/local/share/zsh/site-functions',
             '/usr/share/zsh/site-functions']
 
     for dir in dirs:

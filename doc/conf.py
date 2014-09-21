@@ -14,7 +14,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 project = u'gitlink'
-copyright = u'2012-2013, Georgi Valkov'
+copyright = u'2012-2014, Georgi Valkov'
 
 release = kw['version']
 version = release
