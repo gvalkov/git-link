@@ -64,14 +64,8 @@ def mk_gitlink(url, codir, browser, linkurl, headrev):
 
     def gitlink(args):
         os.chdir(codir)
-        oldargs = sys.argv[:]
         out = StringIO()
-        try:
-            sys.argv = ['gitlink'] + args.split(' ')
-            main(out)
-        finally:
-            sys.argv = oldargs
-
+        main(args.split(' '), out)
         return out.getvalue().rstrip('\n')
 
     return gitlink

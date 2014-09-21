@@ -1,22 +1,20 @@
-#!/usr/bin/env python
 # encoding: utf-8
 
 '''
 Git sub-command for getting a repo browser link to a git object.
 '''
 
-import optparse
+from __future__ import print_function, absolute_import
 
+from optparse import OptionParser, make_option as mkopt
 from sys import argv, exit, stderr, stdout, version_info
 
-from gitlink.repobrowsers import names, LinkType as LT
-from gitlink import git, version
+from . repobrowsers import repobrowsers, LinkType as LT
+from . import git, version, utils
 
 
-basestr = (str, unicode) if version_info[0] == 2 else (str,)
-
-
-# Configuring an optparse formatter is too verbose. This will do:
+#-----------------------------------------------------------------------------
+# Option parsing
 usage = '''\
 Usage: git link [options] <commit|tree|blob|path|branch|tag|diff>
 
@@ -29,7 +27,7 @@ Options:
   -s, --short <num>     truncate hashes to length (overwrites link.short)
   -r, --raw             show raw blob if possible
 
-Available repo browsers:
+Repo browsers:
   %s
 
 Configuration:
@@ -38,93 +36,74 @@ Configuration:
   git config --add link.clipboard false|true
 
 Examples:
-  git link HEAD~10        -> url to 10th commit before HEAD
-  git link v0.1.0^{tree}  -> url to tree object at tag v0.1.0
-  git link master:file    -> url to file in branch master
-  git link path/file      -> url to path/file in current branch
-  git link devel -- path  -> url to path in branch devel
-  git link v0.1.0         -> url to tag v0.1.0
-''' % ' '.join(names.keys())
+  git link HEAD~10         url of 10th commit before HEAD
+  git link v0.1.0^{tree}   url of tree object at tag v0.1.0
+  git link master:file     url of file in branch master
+  git link path/file       url of path/file in current branch
+  git link devel -- path   url of path in branch devel
+  git link v0.1.0          url of tag v0.1.0''' % ' '.join(repobrowsers)
 
-
-def parseopt(args=None):
-    o = optparse.make_option
-
+def parseopt(args=argv[1:]):
     opts = (
-        o('-h', '--help',      action='store_true'),
-        o('-v', '--version',   action='store_true'),
-        o('-c', '--clipboard', action='store_true'),
-        o('-r', '--raw',       action='store_true'),
-        o('-u', '--url',       action='store'),
-        o('-b', '--browser',   action='store', choices=list(names.keys())),
-        o('-s', '--short',     action='store', type='int'),
-        o('-t', '--traceback', action='store_true'),
+        mkopt('-h', '--help',      action='store_true'),
+        mkopt('-v', '--version',   action='store_true'),
+        mkopt('-c', '--clipboard', action='store_true'),
+        mkopt('-r', '--raw',       action='store_true'),
+        mkopt('-u', '--url',       action='store'),
+        mkopt('-b', '--browser',   action='store', choices=list(repobrowsers)),
+        mkopt('-s', '--short',     action='store'),
+        mkopt('-t', '--traceback', action='store_true'),
     )
 
-    kw = {
-        'usage': usage,
-        'option_list': opts,
-        'add_help_option': False,
-    }
+    parser = OptionParser(usage=usage, option_list=opts, add_help_option=False)
+    opts, args = parser.parse_args(args)
+    return parser, opts, args
 
-    p = optparse.OptionParser(**kw)
-    #p.allow_interspersed_args = False
-
-    if not args: o, a = p.parse_args()
-    else:        o, a = p.parse_args(args)
-
-    return p, o, a
-
-
-def to_clipboard(s):
-    '''Send string to clipboard.'''
-    try:
-        from gitlink.pyperclip import copy
-    except:
-        raise Exception('warning: xclip or xsel must be installed for copying to work')
-    copy(s)
-
-
-def readopts():
+def readopts(cmdargs=argv[1:]):
     '''Read configuration from command line or git config.'''
 
-    parser, opts, args = parseopt()
+    parser, opts, args = parseopt(cmdargs)
 
     if opts.version:
-        vstr = 'git-link version %s \n' % version
-        stderr.write(vstr)
+        vstr = 'git-link version %s' % version
+        print(vstr, file=stderr)
         exit(0)
 
-    if len(argv) == 1 or opts.help or not args:
-        stderr.write(usage)
+    if opts.help or not args:
+        print(usage)
         exit(0)
 
     cfg = git.get_config('link')
 
-    # command line > git config
-    url = opts.url or cfg.get('url', None)
-    browser = opts.browser or cfg.get('browser', None)
-    clipboard = opts.clipboard or cfg.get('clipboard', None)
-    short = opts.short or cfg.get('short', None)
+    # command line options overrule git config options
+    opts.url = opts.url or cfg.get('url')
+    opts.browser = opts.browser or cfg.get('browser')
+    opts.clipboard = opts.clipboard or cfg.get('clipboard')
+    opts.short = opts.short or cfg.get('short')
 
     errors = []
-    if not url:
-        errors.append('repo browser url not set via "link.url" or "-u, --url"\n')
-    if not browser:
-        errors.append('repo browser type not set via "link.browser" or "-b, --browser"\n')
+    if not opts.url:
+        msg = "repo browser url not - use 'git config link.url' or '-u, --url'"
+        errors.append(msg)
+    if not opts.browser:
+        msg = "repo browser type not set - use 'git config link.browser' or '-b, --browser'"
+        errors.append(msg)
 
-    if short:
-        try: short = int(short)
+    if opts.short:
+        try:
+            opts.short = int(opts.short)
         except ValueError:
-            errors.append('invalid integer value for option "link.short": %s' % short)
+            msg = "invalid integer value for option 'git config link.short' or '-s, --short': %s"
+            errors.append(msg % opts.short)
 
     if errors:
-        stderr.write(''.join(errors))
+        print('\n'.join(errors), file=stderr)
         exit(1)
 
-    return url, browser, clipboard, short, args, opts.raw, opts
+    return opts, args
 
 
+#-----------------------------------------------------------------------------
 def expand_args(ish, path):
     '''Determine *ish type and prepare response dict.'''
 
@@ -134,13 +113,14 @@ def expand_args(ish, path):
             raise Exception('invalid reference: %s -- %s' % (ish, path))
         return res
 
-    r, t = git.run('git cat-file -t %s' % ish)
-
+    ret, t = git.run('git cat-file -t %s' % ish)
     res = {}
 
     if t == 'commit' and ish != 'HEAD':
-        try:    res = git.branch(ish)
-        except: res = git.commit(ish)
+        try:
+            res = git.branch(ish)
+        except:
+            res = git.commit(ish)
 
     elif t == 'commit': res = git.commit(ish)
     elif t == 'tree':   res = git.tree(ish)
@@ -155,6 +135,7 @@ def expand_args(ish, path):
     return res
 
 
+#-----------------------------------------------------------------------------
 def get_link(r, rb, ish, raw=False):
     t = r['type']
 
@@ -181,47 +162,41 @@ def get_link(r, rb, ish, raw=False):
 
     return link
 
+def main(cmdargs=argv[1:], out=stdout):
+    opts, args = readopts(cmdargs)
 
-def shorten_hashes(res, length=7):
-    for key in 'sha', 'tree_sha', 'object', 'commit_sha', 'top_tree_sha':
-        if key in res and isinstance(res[key], basestr):
-            res[key] = res[key][:length]
+    if len(args) == 2:
+        ish, path = args
+    else:
+        ish, path = args[0], None
 
-
-def main(out=stdout):
-    url, browser, clipboard, short, args, raw, opts = readopts()
-
-    if len(args) == 2: ish, path = args
-    else: ish, path = args[0], None
-
-    # instantiate repository browser
     try:
-        rb = names[browser](url)
+        # instantiate repository browser
+        rb = repobrowsers[opts.browser](opts.url)
     except KeyError as e:
-        stderr.write('repository browser "%s" not supported\n' % browser)
+        msg = 'repository browser "%s" not supported'
+        print(msg % opts.browser, file=stderr)
         exit(1)
 
-    # determine *ish type and expand
     try:
+        # determine *ish type and expand
         res = expand_args(ish, path)
-        if short: shorten_hashes(res, short)
-        link = get_link(res, rb, ish, raw)
+        if opts.short:
+            utils.shorten_hashes(res, opts.short)
+        link = get_link(res, rb, ish, opts.raw)
     except Exception as e:
         if opts.traceback:
             raise
-        stderr.write(str(e) + '\n')
+        print(str(e), stderr)
         exit(1)
 
-    if link and clipboard:
+    if link and opts.clipboard:
         try:
-            to_clipboard(link)
+            utils.to_clipboard(link)
         except Exception as e:
-            if opts.traceback: raise
-            stderr.write(str(e)+'\n')
+            if opts.traceback:
+                raise
+            print(str(e), file=stderr)
 
     if link:
-        out.write(link+'\n')
-
-
-if __name__ == '__main__':
-    main()
+        print(link, file=out)

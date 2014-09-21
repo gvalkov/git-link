@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from __future__ import absolute_import
 from os.path import join as pjoin
 
 
+#-----------------------------------------------------------------------------
 class RepoBrowser(object):
     '''I represent a repository browser and my methods return links to
        the various git objects that I am capable of showing.'''
@@ -42,17 +44,7 @@ class RepoBrowser(object):
         return pjoin(*l)
 
 
-class LinkType(object):
-    unknown = 0x1
-    commit  = 0x2
-    tree    = 0x3
-    tag     = 0x4
-    branch  = 0x5
-    diff    = 0x6
-    blob    = 0x7
-    path    = 0x8
-
-
+#-----------------------------------------------------------------------------
 class GitwebBrowser(RepoBrowser):
     '''Gitweb - git's default web interface.'''
 
@@ -119,6 +111,7 @@ class GitwebBrowser(RepoBrowser):
         return ';'.join(l)
 
 
+#-----------------------------------------------------------------------------
 class GithubBrowser(RepoBrowser):
     '''Github public repositories.'''
 
@@ -151,11 +144,14 @@ class GithubBrowser(RepoBrowser):
         return self.join('tree', commit, path)
 
 
+#-----------------------------------------------------------------------------
+# I don't know how a private repo looks like, but I assume it's
+# similar to a public one.
 class GithubPrivateBrowser(GithubBrowser):
-    '''Github private repositories (I don't know how a private repo looks
-       like, but I assume it's similar to a public one).'''
+    '''Github private repositories.'''
 
 
+#-----------------------------------------------------------------------------
 class CgitBrowser(RepoBrowser):
     '''Cgit - web interface for git repositories, written in c.'''
 
@@ -193,7 +189,20 @@ class CgitBrowser(RepoBrowser):
         return pjoin(*url)
 
 
-names = {
+#-----------------------------------------------------------------------------
+class LinkType(object):
+    unknown = 0x1
+    commit  = 0x2
+    tree    = 0x3
+    tag     = 0x4
+    branch  = 0x5
+    diff    = 0x6
+    blob    = 0x7
+    path    = 0x8
+
+
+#-----------------------------------------------------------------------------
+repobrowsers = {
     'cgit':   CgitBrowser,
     'gitweb': GitwebBrowser,
     'github': GithubBrowser,
