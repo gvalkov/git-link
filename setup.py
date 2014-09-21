@@ -3,48 +3,42 @@
 
 from sys import stdout
 from os import getuid
-from os.path import dirname, isdir, join as pjoin
+from os.path import isdir, join as pjoin
 
 from distutils.command.build import build
 from distutils.core import Command
 from setuptools import setup
 
-from gitlink.version import version
+from gitlink import version
 
-
-here = dirname(__file__)
-
-classifiers = (
+classifiers = [
     'Environment :: Console',
     'Topic :: Utilities',
     'Operating System :: OS Independent',
     'Programming Language :: Python :: 2.7',
-    'Programming Language :: Python :: 3.0',
-    'Programming Language :: Python :: 3.1',
-    'Programming Language :: Python :: 3.2',
+    'Programming Language :: Python :: 3.3',
+    'Programming Language :: Python :: 3.4',
     'License :: OSI Approved :: BSD License',
     'Development Status :: 5 - Production/Stable',
-    #'Development Status :: 6 - Mature',
-    #'Development Status :: 7 - Inactive',
-)
+]
 
 kw = {
-    'name'             : 'gitlink',
-    'version'          : version(),
-    'description'      : 'Git sub-command for getting a repo browser link to a git object',
-    'long_description' : open(pjoin(here, 'README.rst')).read(),
-    'url'              : 'https://github.com/gvalkov/git-link',
-    'author'           : 'Georgi Valkov',
-    'author_email'     : 'georgi.t.valkov@gmail.com',
-    'license'          : 'Revised BSD License',
-    'keywords'         : 'git gitweb github cgit subcommand',
-    'classifiers'      : classifiers,
-    'packages'         : ['gitlink'],
-    'entry_points'     : {'console_scripts': ['git-link = gitlink.main:main']},
-    'data_files'       : [('share/man/man1', ['doc/git-link.1'])],
-    'tests_require'    : ['pytest'],
-    'cmdclass'         : {},
-    'zip_safe'         : False,
+    'name':             'gitlink',
+    'version':          version,
+    'description':      'Git sub-command for getting a repo browser link to a git object',
+    'long_description': open('README.rst').read(),
+    'url':              'https://github.com/gvalkov/git-link',
+    'author':           'Georgi Valkov',
+    'author_email':     'georgi.t.valkov@gmail.com',
+    'license':          'Revised BSD License',
+    'keywords':         'git gitweb github cgit subcommand',
+    'classifiers':      classifiers,
+    'packages':         ['gitlink'],
+    'entry_points':     {'console_scripts': ['git-link = gitlink.main:main']},
+    'data_files':       [('share/man/man1', ['doc/git-link.1'])],
+    'tests_require':    ['pytest'],
+    'cmdclass':         {},
+    'zip_safe':         True,
 }
 
 
