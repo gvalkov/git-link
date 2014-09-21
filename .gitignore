@@ -18,3 +18,4 @@ tests/test-output
 tests/test-repos
 __pycache__/
 doc/_build/
+git-link.zip
