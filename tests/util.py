@@ -7,19 +7,19 @@ import os, sys
 from shutil import rmtree
 from tempfile import mkdtemp
 from functools import partial
-from subprocess import call, check_call
-from os.path import dirname, abspath, join as pjoin, isdir
+from subprocess import call, check_call, check_output
+from os.path import dirname, abspath, join as pjoin, isdir, isfile
 
 try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
 
-from pytest import raises, set_trace, mark
+from pytest import mark
 from gitlink.main import main
 
 
-run  = lambda *x,**kw: check_call(x, **kw)
+run  = lambda *x, **kw: check_call(x, **kw)
 here = dirname(abspath(__file__))
 test_output_dir = pjoin(here, 'test-output')
 test_repo_dir = pjoin(here, 'test-repos')
@@ -56,16 +56,23 @@ def validate_url_404(url):
 
 def mk_gitlink(url, codir, browser, linkurl, headrev):
     codir = '%s/%s' % (test_repo_dir, codir)
-
     repo = Repo(url, codir, headrev)
     repo.clone()
     repo.config('link.browser', browser)
     repo.config('link.url', linkurl)
 
-    def gitlink(args):
+    def gitlink_lib(args):
         os.chdir(codir)
         out = StringIO()
         main(args.split(' '), out)
-        return out.getvalue().rstrip('\n')
+        return out.getvalue().rstrip()
 
-    return gitlink
+    def gitlink_exe(args):
+        os.chdir(codir)
+        cmd = ['%s/../git-link' % here]
+        cmd.extend(args.split())
+        return check_output(cmd).rstrip().decode('utf8')
+
+    return gitlink_lib, gitlink_exe
+
+skipif_no_gitlink = mark.skipif(not isfile(pjoin(here, '../git-link')), reason='missing git-link.zip')

@@ -49,12 +49,20 @@ res = [
      'http://hjemli.net/git/cgit/plain/COPYING/?tree=a0ec3e5'),
 ]
 
+url = 'http://hjemli.net/git/cgit'
+headrev = 'f9b801a1746d6c4476b230659d2e1f3714986550'
+
 @pytest.fixture
 def gitlink(request):
-    url = 'http://hjemli.net/git/cgit'
-    return mk_gitlink(url, 'cgit', 'cgit', url, 'f9b801a1746d6c4476b230659d2e1f3714986550')
+    return mk_gitlink(url, 'cgit', 'cgit', url, headrev)
 
 @mark.parametrize(('cmdargs', 'expect'), res)
-def test_cgit_auto(gitlink, cmdargs, expect):
-    assert gitlink(cmdargs) == expect
+def test_cgit_auto_lib(gitlink, cmdargs, expect):
+    assert gitlink[0](cmdargs)  == expect
+    assert validate_url_404(expect)
+
+@skipif_no_gitlink
+@mark.parametrize(('cmdargs', 'expect'), res)
+def test_cgit_auto_exe(gitlink, cmdargs, expect):
+    assert gitlink[1](cmdargs)  == expect
     assert validate_url_404(expect)

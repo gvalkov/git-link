@@ -49,13 +49,21 @@ res = [
      'http://git.naquadah.org/?p=oocairo.git;a=blob_plain;h=f90b1e3;f=COPYRIGHT'),
 ]
 
+url = 'http://git.naquadah.org/git/oocairo.git'
+linkurl = 'http://git.naquadah.org/?p=oocairo.git'
+headrev = '2b40c79192e3c86074d21af51774971e19cbd2ab'
+
 @pytest.fixture
 def gitlink(request):
-    url = 'http://git.naquadah.org/git/oocairo.git'
-    linkurl =  'http://git.naquadah.org/?p=oocairo.git'
-    return mk_gitlink(url, 'gitweb', 'gitweb', linkurl, 'HEAD')
+    return mk_gitlink(url, 'gitweb', 'gitweb', linkurl, headrev)
 
 @mark.parametrize(('cmdargs', 'expect'), res)
-def test_gitweb_auto(gitlink, cmdargs, expect):
-    assert gitlink(cmdargs) == expect
+def test_gitweb_auto_lib(gitlink, cmdargs, expect):
+    assert gitlink[0](cmdargs)  == expect
+    assert validate_url_404(expect)
+
+@skipif_no_gitlink
+@mark.parametrize(('cmdargs', 'expect'), res)
+def test_gitweb_auto_exe(gitlink, cmdargs, expect):
+    assert gitlink[1](cmdargs)  == expect
     assert validate_url_404(expect)

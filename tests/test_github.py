@@ -49,13 +49,21 @@ res = [
      'https://github.com/gvalkov/rsstail.py/tree/8c30df6/tests'),
 ]
 
+url = 'git@github.com:gvalkov/rsstail.py.git'
+linkurl = 'https://github.com/gvalkov/rsstail.py'
+headrev = '790cc8cde0ef6c06443ee14c11ff7b1c6d3f22f4'
+
 @pytest.fixture
 def gitlink(request):
-    url = 'git@github.com:gvalkov/rsstail.py.git'
-    linkurl = 'https://github.com/gvalkov/rsstail.py'
-    return mk_gitlink(url, 'github', 'github', linkurl, '790cc8cde0ef6c06443ee14c11ff7b1c6d3f22f4')
+    return mk_gitlink(url, 'github', 'github', linkurl, headrev)
 
 @mark.parametrize(('cmdargs', 'expect'), res)
-def test_github_auto(gitlink, cmdargs, expect):
-    assert gitlink(cmdargs) == expect
+def test_github_auto_lib(gitlink, cmdargs, expect):
+    assert gitlink[0](cmdargs)  == expect
+    assert validate_url_404(expect)
+
+@skipif_no_gitlink
+@mark.parametrize(('cmdargs', 'expect'), res)
+def test_github_auto_exe(gitlink, cmdargs, expect):
+    assert gitlink[1](cmdargs)  == expect
     assert validate_url_404(expect)
