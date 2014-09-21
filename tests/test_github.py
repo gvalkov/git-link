@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-''' github tests '''
-
 from util import *
-
 
 res = [
     # branch
@@ -25,11 +22,11 @@ res = [
 
     # file path (HEAD)
     ('.gitignore',
-     'https://github.com/gvalkov/rsstail.py/tree/2948f4e896551ce5f114e58cd0a1be114a722e77/.gitignore'),
+     'https://github.com/gvalkov/rsstail.py/tree/790cc8cde0ef6c06443ee14c11ff7b1c6d3f22f4/.gitignore'),
 
     # dir path (HEAD)
     ('tests/',
-     'https://github.com/gvalkov/rsstail.py/tree/2948f4e896551ce5f114e58cd0a1be114a722e77/tests'),
+     'https://github.com/gvalkov/rsstail.py/tree/790cc8cde0ef6c06443ee14c11ff7b1c6d3f22f4/tests'),
 
     # blob with tag
     ('v0.1.1:setup.py',
@@ -52,14 +49,13 @@ res = [
      'https://github.com/gvalkov/rsstail.py/tree/8c30df6/tests'),
 ]
 
-
-def pytest_funcarg__gitlink(request):
+@pytest.fixture
+def gitlink(request):
     url = 'git@github.com:gvalkov/rsstail.py.git'
     linkurl = 'https://github.com/gvalkov/rsstail.py'
-    return mk_gitlink(url, 'github', 'github', linkurl)
-
+    return mk_gitlink(url, 'github', 'github', linkurl, '790cc8cde0ef6c06443ee14c11ff7b1c6d3f22f4')
 
 @mark.parametrize(('cmdargs', 'expect'), res)
 def test_github_auto(gitlink, cmdargs, expect):
     assert gitlink(cmdargs) == expect
-
+    assert validate_url_404(expect)

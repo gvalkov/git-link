@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-''' cgit tests '''
-
 from util import *
-
 
 res = [
     # branch
@@ -29,11 +26,11 @@ res = [
 
     # file path (HEAD)
     ('tests/setup.sh',
-     'http://hjemli.net/git/cgit/tree/tests/setup.sh/?tree=2e1546b0557b7372764584ce19bd3f223eed09d8'),
+     'http://hjemli.net/git/cgit/tree/tests/setup.sh/?tree=138e4f6924ba176e05b95e9921bab419912b0e01'),
 
     # dir path (HEAD)
     ('tests/',
-     'http://hjemli.net/git/cgit/tree/tests/?tree=2e1546b0557b7372764584ce19bd3f223eed09d8'),
+     'http://hjemli.net/git/cgit/tree/tests/?tree=138e4f6924ba176e05b95e9921bab419912b0e01'),
 
     # blob with tag
     ('v0.8.3~10:tests/setup.sh',
@@ -52,13 +49,12 @@ res = [
      'http://hjemli.net/git/cgit/plain/COPYING/?tree=a0ec3e5'),
 ]
 
-
-def pytest_funcarg__gitlink(request):
+@pytest.fixture
+def gitlink(request):
     url = 'http://hjemli.net/git/cgit'
-    return mk_gitlink(url, 'cgit', 'cgit', url)
-
+    return mk_gitlink(url, 'cgit', 'cgit', url, 'f9b801a1746d6c4476b230659d2e1f3714986550')
 
 @mark.parametrize(('cmdargs', 'expect'), res)
 def test_cgit_auto(gitlink, cmdargs, expect):
     assert gitlink(cmdargs) == expect
-
+    assert validate_url_404(expect)

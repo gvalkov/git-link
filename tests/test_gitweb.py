@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-''' gitweb tests '''
-
 from util import *
-
 
 res = [
     # commit
@@ -33,7 +30,7 @@ res = [
 
     # dir path (HEAD)
     ('test/',
-     'http://git.naquadah.org/?p=oocairo.git;a=tree;f=test;h=e0032acb5f99f30f371d168bd8cae0597637b884'),
+     'http://git.naquadah.org/?p=oocairo.git;a=tree;f=test;h=8e941a88c606930750c98fc10927b17f0588cc8d'),
 
     # blob with tag
     ('v1.4:Changes',
@@ -52,14 +49,13 @@ res = [
      'http://git.naquadah.org/?p=oocairo.git;a=blob_plain;h=f90b1e3;f=COPYRIGHT'),
 ]
 
-
-def pytest_funcarg__gitlink(request):
+@pytest.fixture
+def gitlink(request):
     url = 'http://git.naquadah.org/git/oocairo.git'
     linkurl =  'http://git.naquadah.org/?p=oocairo.git'
-    return mk_gitlink(url, 'gitweb', 'gitweb', linkurl)
-
+    return mk_gitlink(url, 'gitweb', 'gitweb', linkurl, 'HEAD')
 
 @mark.parametrize(('cmdargs', 'expect'), res)
 def test_gitweb_auto(gitlink, cmdargs, expect):
     assert gitlink(cmdargs) == expect
-
+    assert validate_url_404(expect)
