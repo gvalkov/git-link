@@ -26,13 +26,13 @@ is to click your way to it through a web interface. An example using
 Install
 =======
 
-If you are familiar with installing packages from PyPi:
+Install from PyPi:
 
 .. code-block:: bash
 
     $ pip install gitlink
 
-Otherwise, simply put the following file in your ``$PATH`` and make it executable::
+Or simply put git-link in your ``$PATH`` and make it executable::
 
     https://raw.githubusercontent.com/gvalkov/git-link/master/git-link
 
@@ -87,18 +87,25 @@ Development
 ===========
 
 See repobrowsers.py_ and test_cgit.py_ if you are interested in adding
-a new repository browser. Running ``py.test`` before committing is
-generally a good idea.
+a new repository browser. Release checklist:
+
+1) Run ``py.test``.
+
+2) Bump version in ``gitlink/__init__.py``.
+
+3) Update man page - ``make man/git-link.1``.
+
+4) Create standalone script - ``make git-link``.
 
 Please make do without bringing in any external dependencies. As nice
 as GitPython_ and libgit2_ are, anything that this tool needs from git
 can be queried using its command line interface.
 
-License
+
+Lcense
 =======
 
 *Git-link* is released under the terms of the `Revised BSD License`_.
-
 
 Links
 =====
