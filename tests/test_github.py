@@ -49,7 +49,7 @@ res = [
      'https://github.com/gvalkov/rsstail.py/tree/8c30df6/tests'),
 ]
 
-url = 'git@github.com:gvalkov/rsstail.py.git'
+url = 'https://github.com/gvalkov/rsstail.py.git'
 linkurl = 'https://github.com/gvalkov/rsstail.py'
 headrev = '790cc8cde0ef6c06443ee14c11ff7b1c6d3f22f4'
 

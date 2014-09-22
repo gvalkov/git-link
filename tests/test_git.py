@@ -7,7 +7,7 @@ from gitlink.git import *
 
 @pytest.fixture
 def repo(request):
-    repo = Repo('%s/../' % here, '%s/test-git' % test_repo_dir)
+    repo = Repo('https://github.com/gvalkov/git-link.git', '%s/test-git' % test_repo_dir, 'HEAD')
     repo.clone()
     repo.chdir()
     return repo
