@@ -1,4 +1,3 @@
-
 # bash completion for the the git link command
 # http://github.com/gvalkov/git-link
 
