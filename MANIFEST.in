@@ -1,6 +1,6 @@
 include README.rst
 include LICENSE
-include doc/*.rst
-include doc/*.1
+include man/*.rst
+include man/*.1
 include etc/git-link.sh
 include etc/_git-link

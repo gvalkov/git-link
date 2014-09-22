@@ -26,7 +26,7 @@ is to click your way to it through a web interface. An example using
 Install
 =======
 
-If you are familiar with installing package from PyPi:
+If you are familiar with installing packages from PyPi:
 
 .. code-block:: bash
 
@@ -72,8 +72,8 @@ Setup
 =====
 
 *Git-link* needs to know the name and url of the repository browser
-for every repository it is being run in. This can be set through
-``git-config`` or on the command line for each invocation:
+for the repository it is being run in. This can be set through
+``git-config`` or on the command line on each run:
 
 .. code-block:: bash
 
@@ -82,6 +82,17 @@ for every repository it is being run in. This can be set through
     $ git config --add link.clipboard false|true  # optional
     $ git config --add link.short 7  # optional
     $ git link --browser <url> --name <name> --clipboard ...
+
+Development
+===========
+
+See repobrowsers.py_ and test_cgit.py_ if you are interested in adding
+a new repository browser. Running ``py.test`` before committing is
+generally a good idea.
+
+Please make do without bringing in any external dependencies. As nice
+as GitPython_ and libgit2_ are, anything that this tool needs from git
+can be queried using its command line interface.
 
 License
 =======
@@ -103,3 +114,8 @@ Package:
 .. _github:     http://github.com/
 .. _github-private: https://github.com/plans
 .. _`Revised BSD License`: https://raw.github.com/gvalkov/git-link/master/LICENSE
+.. _GitPython: https://pypi.python.org/pypi/GitPython/
+.. _PyGit2: https://pypi.python.org/pypi/pygit2
+.. _repobrowsers.py:   https://github.com/gvalkov/git-link/blob/master/gitlink/repobrowsers.py
+.. _test_cgit.py:      https://github.com/gvalkov/git-link/blob/master/tests/test_cgit.py
+.. _libgit2:           http://www.pygit2.org/

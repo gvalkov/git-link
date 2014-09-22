@@ -34,7 +34,7 @@ kw = {
     'classifiers':      classifiers,
     'packages':         ['gitlink'],
     'entry_points':     {'console_scripts': ['git-link = gitlink.main:main']},
-    'data_files':       [('share/man/man1', ['doc/git-link.1'])],
+    'data_files':       [('share/man/man1', ['man/git-link.1'])],
     'tests_require':    ['pytest'],
     'zip_safe':         True,
 }
