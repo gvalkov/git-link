@@ -86,6 +86,9 @@ for the repository it is being run in. This can be set through
 Development
 ===========
 
+.. image:: https://travis-ci.org/gvalkov/git-link.svg?branch=master
+    :target: https://travis-ci.org/gvalkov/git-link
+
 See repobrowsers.py_ and test_cgit.py_ if you are interested in adding
 a new repository browser. Release checklist:
 
