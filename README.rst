@@ -105,7 +105,7 @@ as GitPython_ and libgit2_ are, anything that this tool needs from git
 can be queried using its command line interface.
 
 
-Lcense
+License
 =======
 
 *Git-link* is released under the terms of the `Revised BSD License`_.
